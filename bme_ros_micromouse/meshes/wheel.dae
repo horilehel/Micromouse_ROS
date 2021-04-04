@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.92.0 commit date:2021-02-24, commit time:16:25, hash:02948a2cab44</authoring_tool>
     </contributor>
-    <created>2021-04-04T14:49:51</created>
-    <modified>2021-04-04T14:49:51</modified>
+    <created>2021-04-04T19:53:40</created>
+    <modified>2021-04-04T19:53:40</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -75,7 +75,31 @@
       </extra>
     </light>
   </library_lights>
+  <library_effects>
+    <effect id="Material-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0 0 0 1</color>
+            </diffuse>
+            <reflectivity>
+              <float sid="specular">0.5</float>
+            </reflectivity>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
   <library_images/>
+  <library_materials>
+    <material id="Material-material" name="Material">
+      <instance_effect url="#Material-effect"/>
+    </material>
+  </library_materials>
   <library_geometries>
     <geometry id="Circle-mesh" name="Circle">
       <mesh>
@@ -122,7 +146,7 @@
         <vertices id="Circle-mesh-vertices">
           <input semantic="POSITION" source="#Circle-mesh-positions"/>
         </vertices>
-        <triangles count="576">
+        <triangles material="Material-material" count="576">
           <input semantic="VERTEX" source="#Circle-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Circle-mesh-normals" offset="1"/>
           <input semantic="TEXCOORD" source="#Circle-mesh-map-0" offset="2" set="0"/>
@@ -135,8 +159,16 @@
   <library_visual_scenes>
     <visual_scene id="Scene" name="Scene">
       <node id="Circle" name="Circle" type="NODE">
-        <matrix sid="transform">1 0 0 0 0 -1.62921e-7 1 0 0 -1 -1.62921e-7 0 0 0 0 1</matrix>
-        <instance_geometry url="#Circle-mesh" name="Circle"/>
+        <matrix sid="transform">0.01302975 0 0 0 0 0.01285278 0 0 0 0 0.008622609 0.001505282 0 0 0 1</matrix>
+        <instance_geometry url="#Circle-mesh" name="Circle">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="Material-material" target="#Material-material">
+                <bind_vertex_input semantic="UVMap" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
       </node>
       <node id="Camera" name="Camera" type="NODE">
         <matrix sid="transform">0.6859207 -0.3240135 0.6515582 7.358891 0.7276763 0.3054208 -0.6141704 -6.925791 0 0.8953956 0.4452714 4.958309 0 0 0 1</matrix>
