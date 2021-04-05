@@ -7,8 +7,8 @@
       <updateRate>10</updateRate>                            <!-- Plugin update rate in Hz -->
       <leftJoint>left_wheel_joint</leftJoint>                <!-- Name of left joint, defaults to `left_joint` -->
       <rightJoint>right_wheel_joint</rightJoint>             <!-- Name of right joint, defaults to `right_joint` -->
-      <wheelSeparation>0.4</wheelSeparation>                 <!-- The distance from the center of one wheel to the other, in meters, defaults to 0.34 m -->
-      <wheelDiameter>0.2</wheelDiameter>                     <!-- Diameter of the wheels, in meters, defaults to 0.15 m -->
+      <wheelSeparation>0.04</wheelSeparation>                 <!-- The distance from the center of one wheel to the other, in meters, defaults to 0.34 m -->
+      <wheelDiameter>0.03</wheelDiameter>                     <!-- Diameter of the wheels, in meters, defaults to 0.15 m -->
       <wheelTorque>10</wheelTorque>                          <!-- Maximum torque which the wheels can produce, in Nm, defaults to 5 Nm -->
       <wheelAcceleration>1.0</wheelAcceleration>             <!-- Wheel acceleration, in rad/s^2, defaults to 0.0 rad/s^2 -->
       <commandTopic>cmd_vel</commandTopic>                   <!-- Topic to receive geometry_msgs/Twist message commands, defaults to `cmd_vel` -->
