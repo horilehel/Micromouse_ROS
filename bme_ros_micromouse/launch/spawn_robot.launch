@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <!-- RViz config file -->
+  <arg name="rvizconfig" default="$(find bme_ros_micromouse)/rviz/world.rviz" />
+  <arg name="model" default="$(find bme_ros_micromouse)/urdf/umouse_robot.xacro"/>
+
+  <!-- Robot pose -->
+  <!-- Inititalize it's position in the desired location inside the world -->
+  <arg name="x" default="0"/>
+  <arg name="y" default="0"/>
+  <arg name="z" default="0"/>
+  <arg name="roll" default="0"/>
+  <arg name="pitch" default="0"/>
+  <arg name="yaw" default="0"/>
+
+  <!-- Launch our Gazebo world -->
+  <include file="$(find bme_ros_micromouse)/launch/world.launch"/>
+
+  <!-- Find umouse_robot description and send urdf to param server -->
+  <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
+
+  <!-- Send joint values-->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="false"/>
+  </node>
+
+  <!-- Send robot states to tf -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen"/>
+
+  <!-- Spawn umouse_robot -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
+    args="-urdf -param robot_description -model umouse_robot 
+            -x $(arg x) -y $(arg y) -z $(arg z)
+            -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)"/>
+
+  <!-- Launch RViz -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+
+</launch>
