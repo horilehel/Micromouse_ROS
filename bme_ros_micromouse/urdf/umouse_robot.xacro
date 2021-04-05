@@ -44,34 +44,34 @@
         <!--box size=".4 .2 .1"/-->
         <mesh filename = "package://bme_ros_micromouse/meshes/body.dae"/>
       </geometry>
-      <material name="pink"/>
+      <material name="orange"/>
     </visual>
 
     <collision name='rear_caster_collision'>
       <origin xyz="-0.04 0 -0.005" rpy=" 0 0 0"/>
       <geometry>
-        <sphere radius="0.0079"/>
+        <sphere radius="0.0099"/>
       </geometry>
     </collision>
 
     <visual name='rear_caster_visual'>
       <origin xyz="-0.04 0 -0.005" rpy=" 0 0 0"/>
       <geometry>
-        <sphere radius="0.008"/>
+        <sphere radius="0.01"/>
       </geometry>
     </visual>
 
     <collision name='front_caster_collision'>
       <origin xyz="0.025 0 -0.005" rpy=" 0 0 0"/>
       <geometry>
-        <sphere radius="0.0079"/>
+        <sphere radius="0.0099"/>
       </geometry>
     </collision>
 
     <visual name='front_caster_visual'>
       <origin xyz="0.025 0 -0.005" rpy=" 0 0 0"/>
       <geometry>
-        <sphere radius="0.008"/>
+        <sphere radius="0.01"/>
       </geometry>
     </visual>
 
@@ -166,7 +166,7 @@
   </gazebo-->
 
 <!-- Lidar -->
-  <joint type="fixed" name="scan_joint">
+  <!--joint type="fixed" name="scan_joint">
     <origin xyz="0.0 0 0.02" rpy="0 0 0"/>
     <child link="scan_link"/>
     <parent link="base_link"/>
@@ -198,6 +198,6 @@
       </geometry>
     </visual>
 
-  </link>
+  </link-->
 
 </robot>

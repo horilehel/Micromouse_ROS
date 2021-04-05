@@ -13,7 +13,7 @@
   <arg name="z" default="0"/>
   <arg name="roll" default="0"/>
   <arg name="pitch" default="0"/>
-  <arg name="yaw" default="-1.57"/>
+  <arg name="yaw" default="0"/>
 
   <!-- Launch our Gazebo world -->
   <include file="$(find bme_ros_micromouse)/launch/world.launch"/>
