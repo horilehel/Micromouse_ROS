@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+
+  <!--node name="turtle_teleop_key" pkg="turtlesim" type="turtle_teleop_key" output="screen">
+    <remap from="/turtle1/cmd_vel" to="cmd_vel"/>
+  </node-->
+
+  <!--node name="key_teleop" pkg="key_teleop" type="key_teleop.py" output="screen">
+    <remap from="key_vel" to="cmd_vel"/>
+  </node-->
+
+  <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen"/>
+
+</launch>
