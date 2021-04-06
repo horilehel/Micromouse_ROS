@@ -6,7 +6,7 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
-def get_rotation(msg):
+def get_odometry_data(msg):
     global roll, pitch, yaw
     global x, y
 
@@ -16,10 +16,8 @@ def get_rotation(msg):
 
     x = msg.pose.pose.position.x
     y = msg.pose.pose.position.y
-    print(y)
 
     check_orient()
-
 
 def check_orient(threshold = 0.05):
     global orient
@@ -37,9 +35,6 @@ def check_orient(threshold = 0.05):
         orient = 3
     else:
         orient = -1
-
-    #TODO if orient == -1
-
 
 def get_lidar_data(msg):
     # range 0-719 -> -180° - +180°
@@ -74,21 +69,136 @@ def check_walls():
         right_wall = True
     else:
         right_wall = False
-    
-    debug = False
-    if debug:
-        print("---")
-        print("back:" + str(back_wall))
-        print("right:" + str(right_wall))
-        print("front:" + str(front_wall))
-        print("left:" + str(left_wall))
-        print("---")
-        print("back:" + str(back_dist))
-        print("right:" + str(right_dist))
-        print("front:" + str(front_dist))
-        print("left:" + str(left_dist))
 
     return back_wall, left_wall, front_wall, right_wall
+
+def which_wall():
+    if left_wall and not front_wall and not right_wall and not back_wall:
+        if orient == 0:
+            wall_type = 1
+        elif orient == 1:
+            wall_type = 2
+        elif orient == 2:
+            wall_type = 3
+        elif orient == 3:
+            wall_type = 4
+    elif not left_wall and  front_wall and not right_wall and not back_wall:
+        if orient == 0:
+            wall_type = 2
+        elif orient == 1:
+            wall_type = 3
+        elif orient == 2:
+            wall_type = 4
+        elif orient == 3:
+            wall_type = 1
+    elif not left_wall and not front_wall and right_wall and not back_wall:
+        if orient == 0:
+            wall_type = 3
+        elif orient == 1:
+            wall_type = 4
+        elif orient == 2:
+            wall_type = 1
+        elif orient == 3:
+            wall_type = 2
+    elif not left_wall and not front_wall and not right_wall and  back_wall:
+        if orient == 0:
+            wall_type = 4
+        elif orient == 1:
+            wall_type = 1
+        elif orient == 2:
+            wall_type = 2
+        elif orient == 3:
+            wall_type = 3
+    elif left_wall and not front_wall and not right_wall and back_wall:
+        if orient == 0:
+            wall_type = 5
+        elif orient == 1:
+            wall_type = 8
+        elif orient == 2:
+            wall_type = 7
+        elif orient == 3:
+            wall_type = 6
+    elif not left_wall and not front_wall and right_wall and back_wall:
+        if orient == 0:
+            wall_type = 6
+        elif orient == 1:
+            wall_type = 5
+        elif orient == 2:
+            wall_type = 8
+        elif orient == 3:
+            wall_type = 7
+    elif not left_wall and front_wall and right_wall and not back_wall:
+        if orient == 0:
+            wall_type = 7
+        elif orient == 1:
+            wall_type = 6
+        elif orient == 2:
+            wall_type = 5
+        elif orient == 3:
+            wall_type = 8
+    elif left_wall and front_wall and not right_wall and not back_wall:
+        if orient == 0:
+            wall_type = 8
+        elif orient == 1:
+            wall_type = 7
+        elif orient == 2:
+            wall_type = 6
+        elif orient == 3:
+            wall_type = 5
+    elif left_wall and not front_wall and right_wall and not back_wall:
+        if orient == 0 or orient == 2:
+            wall_type = 9
+        elif orient == 1 or orient == 3:
+            wall_type = 10
+    elif not left_wall and front_wall and not right_wall and back_wall:
+        if orient == 0 or orient == 2:
+            wall_type = 10
+        elif orient == 1 or orient == 3:
+            wall_type = 9
+    elif left_wall and not front_wall and right_wall and back_wall:
+        if orient == 0:
+            wall_type = 11
+        elif orient == 1:
+            wall_type = 14
+        elif orient == 2:
+            wall_type = 13
+        elif orient == 3:
+            wall_type = 12
+    elif not left_wall and front_wall and right_wall and back_wall:
+        if orient == 0:
+            wall_type = 12
+        elif orient == 1:
+            wall_type = 11
+        elif orient == 2:
+            wall_type = 14
+        elif orient == 3:
+            wall_type = 13
+    elif left_wall and front_wall and right_wall and not back_wall:
+        if orient == 0:
+            wall_type = 13
+        elif orient == 1:
+            wall_type = 12
+        elif orient == 2:
+            wall_type = 11
+        elif orient == 3:
+            wall_type = 14
+    elif left_wall andfront_wall and not right_wall and back_wall:
+        if orient == 0:
+            wall_type = 14
+        elif orient == 1:
+            wall_type = 13
+        elif orient == 2:
+            wall_type = 12
+        elif orient == 3:
+            wall_type = 11
+    elif not left_wall and not front_wall and not right_wall and not back_wall:
+        if orient == 0 or orient == 1 or orient == 2 or orient == 3:
+            wall_type = 15
+    elif left_wall and front_wall and right_wall and back_wall:
+        if orient == 0 or orient == 1 or orient == 2 or orient == 3:
+            wall_type = 16
+
+    return wall_type
 
 def go_forward(publisher):
     curr_pos_x = x
@@ -130,7 +240,7 @@ def turn(publisher, new_orient):
 rospy.init_node('labyrinth_mapper')
 rospy.loginfo("Labyrinth mapping started!")
 
-sub_odom = rospy.Subscriber ('/odom', Odometry, get_rotation)
+sub_odom = rospy.Subscriber ('/odom', Odometry, get_odometry_data)
 sub_lidar = rospy.Subscriber('/scan', LaserScan, get_lidar_data)
 pub_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
 rate = rospy.Rate(10)
