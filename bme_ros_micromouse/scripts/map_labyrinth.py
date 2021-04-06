@@ -21,7 +21,7 @@ def get_rotation(msg):
     check_orient()
 
 
-def check_orient(threshold = 0.2):
+def check_orient(threshold = 0.05):
     global orient
     # up
     if 1.57 - threshold < yaw and yaw < 1.57 + threshold:
@@ -111,10 +111,18 @@ def go_forward(publisher):
 def turn(publisher, new_orient):
     curr_yaw = yaw
     move = Twist()
-    while abs(yaw - curr_yaw) < 1.57:
+    while orient != new_orient:
+        orient_diff = new_orient - orient
         print(orient)
-        move.angular.z = -0.1
-        publisher.publish(move)
+        if orient == -1:
+            orient_diff = prev_orient_diff
+        if orient_diff == 1 or orient_diff == -3:
+            move.angular.z = -0.3
+            publisher.publish(move)
+        else:
+            move.angular.z = 0.3
+            publisher.publish(move)
+        prev_orient_diff = orient_diff
     move.angular.z = 0
     publisher.publish(move)
     rospy.sleep(3)
@@ -179,7 +187,5 @@ flood2 = [[0,0,0,0,0,0,0],
 #while not rospy.is_shutdown():
 
 go_forward(pub_vel)
-go_forward(pub_vel)
-go_forward(pub_vel)
-go_forward(pub_vel)
-go_forward(pub_vel)
+turn(pub_vel, 1)
+print(orient)
