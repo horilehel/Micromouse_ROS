@@ -250,6 +250,7 @@ DEACCELERATION_DIST = 0.18
 roll, pitch, yaw = 0, 0, 1.57
 x, y = 0, 0
 
+
 back_wall, left_wall,front_wall, right_wall = True, True, False, True
 
 cmd_vel = Twist()
@@ -257,7 +258,8 @@ cmd_vel.linear.x = 0
 cmd_vel.angular.z = 0
 
 orient = 0
-
+maze_x, maze_y = 0, 10
+# 7x11
 maze = [[0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
