@@ -182,7 +182,7 @@ def which_wall():
             wall_type = 11
         elif orient == 3:
             wall_type = 14
-    elif left_wall andfront_wall and not right_wall and back_wall:
+    elif left_wall and front_wall and not right_wall and back_wall:
         if orient == 0:
             wall_type = 14
         elif orient == 1:
@@ -199,6 +199,37 @@ def which_wall():
             wall_type = 16
 
     return wall_type
+
+def has_wall(wall_type, orient):
+    front_wall_types = [2,7,8,10,12,13,14,16]
+    right_wall_types = [3,6,7,9,11,12,13,16]
+    back_wall_types = [4,5,6,10,11,12,14,16]
+    left_wall_types = [1,5,8,9,11,13,14,16]
+
+    wall = False
+
+    if orient == 0:
+        if wall_type in front_wall_types:
+            wall = True
+        else:
+            wall = False
+    elif orient == 1:
+        if wall_type in right_wall_types:
+            wall = True
+        else:
+            wall = False
+    elif orient == 2:
+        if wall_type in back_wall_types:
+            wall = True
+        else:
+            wall = False
+    elif orient == 3:
+        if wall_type in left_wall_types:
+            wall = True
+        else:
+            wall = False
+
+    return wall
 
 def go_forward(publisher):
     curr_pos_x = x
@@ -237,6 +268,43 @@ def turn(publisher, new_orient):
     publisher.publish(move)
     rospy.sleep(3)
 
+def flood_fill(maze, goal_x, goal_y):
+    flood_array = []
+    for i in range(len(maze)):
+        row = []
+        for j in range(len(maze[i])):
+            row.append(-1)
+        flood_array.append(row)
+
+    dist = 0
+    flood_array[goal_y][goal_x] = dist
+    while any(-1 in row for row in flood_array):
+        for i in range(len(flood_array)):
+            for j in range(len(flood_array[i])):
+                if flood_array[i][j] == dist:
+                    #up
+                    if i != 0:
+                        if flood_array[i-1][j] == -1 and not has_wall(maze[i][j], 0):
+                            flood_array[i-1][j] = dist + 1
+                    #down
+                    if i != len(flood_array) - 1:
+                        if flood_array[i+1][j] == -1 and not has_wall(maze[i][j], 2):
+                            flood_array[i+1][j] = dist + 1
+                    #left
+                    if j != 0:
+                        if flood_array[i][j-1] == -1 and not has_wall(maze[i][j], 3):
+                            flood_array[i][j-1] = dist + 1
+                    #right
+                    if j != len(flood_array[i]) - 1 and not has_wall(maze[i][j], 1):
+                        if flood_array[i][j+1] == -1:
+                            flood_array[i][j+1] = dist + 1
+        dist += 1
+        if dist > 100:
+            break
+
+    return flood_array
+
+
 rospy.init_node('labyrinth_mapper')
 rospy.loginfo("Labyrinth mapping started!")
 
@@ -259,6 +327,7 @@ cmd_vel.angular.z = 0
 
 orient = 0
 maze_x, maze_y = 0, 10
+goal_x, goal_y = 6, 0
 # 7x11
 maze = [[0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
@@ -272,32 +341,8 @@ maze = [[0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0]]
 
-flood = [[6,5,4,3,2,1,0],
-        [7,6,5,4,3,2,1],
-        [8,7,6,5,4,3,2],
-        [9,8,7,6,5,4,3],
-        [10,9,8,7,6,5,4],
-        [11,10,9,8,7,6,5],
-        [12,11,10,9,8,7,6],
-        [13,12,11,10,9,8,7],
-        [14,13,12,11,10,9,8],
-        [15,14,13,12,11,10,9],
-        [16,15,14,13,12,11,10]]
-
-flood2 = [[0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0]]
-
 #while not rospy.is_shutdown():
 
-go_forward(pub_vel)
-turn(pub_vel, 1)
-print(orient)
+new_flood = flood_fill(maze, goal_x, goal_y)
+for asd in new_flood:
+    print(asd)
