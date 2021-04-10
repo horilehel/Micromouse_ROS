@@ -284,18 +284,18 @@ def flood_fill(maze, goal_x, goal_y):
                 if flood_array[i][j] == dist:
                     #up
                     if i != 0:
-                        if flood_array[i-1][j] == -1 and not has_wall(maze[i][j], 0):
+                        if flood_array[i-1][j] == -1 and not has_wall(maze[i][j], 0) and not has_wall(maze[i-1][j], 2):
                             flood_array[i-1][j] = dist + 1
                     #down
                     if i != len(flood_array) - 1:
-                        if flood_array[i+1][j] == -1 and not has_wall(maze[i][j], 2):
+                        if flood_array[i+1][j] == -1 and not has_wall(maze[i][j], 2) and not has_wall(maze[i+1][j], 0):
                             flood_array[i+1][j] = dist + 1
                     #left
                     if j != 0:
-                        if flood_array[i][j-1] == -1 and not has_wall(maze[i][j], 3):
+                        if flood_array[i][j-1] == -1 and not has_wall(maze[i][j], 3) and not has_wall(maze[i][j-1], 1):
                             flood_array[i][j-1] = dist + 1
                     #right
-                    if j != len(flood_array[i]) - 1 and not has_wall(maze[i][j], 1):
+                    if j != len(flood_array[i]) - 1 and not has_wall(maze[i][j], 1) and not has_wall(maze[i][j+1], 3):
                         if flood_array[i][j+1] == -1:
                             flood_array[i][j+1] = dist + 1
         dist += 1
@@ -333,7 +333,7 @@ maze = [[0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
+        [0,0,0,16,0,0,0],
         [0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
