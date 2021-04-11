@@ -19,7 +19,7 @@ def get_odometry_data(msg):
 
     check_orient()
 
-def check_orient(threshold = 0.05):
+def check_orient(threshold = 0.04):
     global orient
     # up
     if 1.57 - threshold < yaw and yaw < 1.57 + threshold:
@@ -31,7 +31,7 @@ def check_orient(threshold = 0.05):
     elif -1.57 - threshold < yaw and yaw < -1.57 + threshold:
         orient = 2
     # left
-    elif 3.14 - threshold < yaw and yaw < -3.14 + threshold:
+    elif (3.14 - threshold < yaw and yaw < 3.14156) or (-3.14156 < yaw and yaw < -3.14 + threshold):
         orient = 3
     else:
         orient = -1
@@ -50,22 +50,22 @@ def get_lidar_data(msg):
 def check_walls():
     global back_wall, left_wall, front_wall, right_wall
 
-    if back_dist < 0.2:
+    if back_dist < 0.25:
         back_wall = True
     else:
         back_wall = False
 
-    if left_dist < 0.2:
+    if left_dist < 0.25:
         left_wall = True
     else:
         left_wall = False
 
-    if front_dist < 0.2:
+    if front_dist < 0.25:
         front_wall = True
     else:
         front_wall = False
 
-    if right_dist < 0.2:
+    if right_dist < 0.25:
         right_wall = True
     else:
         right_wall = False
@@ -73,6 +73,7 @@ def check_walls():
     return back_wall, left_wall, front_wall, right_wall
 
 def which_wall():
+    wall_type = 0
     if left_wall and not front_wall and not right_wall and not back_wall:
         if orient == 0:
             wall_type = 1
@@ -235,7 +236,6 @@ def go_forward(publisher):
     curr_pos_x = x
     curr_pos_y = y
     move = Twist()
-    print(orient)
     if orient == 0 or orient == 2:
         while abs(y - curr_pos_y) < (0.3 - DEACCELERATION_DIST):
             move.linear.x = 0.5
@@ -252,16 +252,16 @@ def go_forward(publisher):
 def turn(publisher, new_orient):
     curr_yaw = yaw
     move = Twist()
+    prev_orient_diff = 0
     while orient != new_orient:
         orient_diff = new_orient - orient
-        print(orient)
         if orient == -1:
             orient_diff = prev_orient_diff
         if orient_diff == 1 or orient_diff == -3:
-            move.angular.z = -0.3
+            move.angular.z = -0.25
             publisher.publish(move)
         else:
-            move.angular.z = 0.3
+            move.angular.z = 0.25
             publisher.publish(move)
         prev_orient_diff = orient_diff
     move.angular.z = 0
@@ -295,14 +295,74 @@ def flood_fill(maze, goal_x, goal_y):
                         if flood_array[i][j-1] == -1 and not has_wall(maze[i][j], 3) and not has_wall(maze[i][j-1], 1):
                             flood_array[i][j-1] = dist + 1
                     #right
-                    if j != len(flood_array[i]) - 1 and not has_wall(maze[i][j], 1) and not has_wall(maze[i][j+1], 3):
-                        if flood_array[i][j+1] == -1:
+                    if j != len(flood_array[i]) - 1:
+                        if flood_array[i][j+1] == -1 and not has_wall(maze[i][j], 1) and not has_wall(maze[i][j+1], 3):
                             flood_array[i][j+1] = dist + 1
         dist += 1
         if dist > 100:
             break
 
+    print("flood:")
+    print_array(flood_array)
+
     return flood_array
+
+def print_array(array):
+    for row in array:
+        print(row)
+
+def update_maze(maze, maze_x, maze_y):
+    if maze[maze_y][maze_x] == 0:
+        wall_type = which_wall()
+        maze[maze_y][maze_x] = wall_type
+    
+    print("maze:")
+    print_array(maze)
+    
+    return maze
+
+def find_next_cell(flood_array, maze_array, maze_x, maze_y):
+    orients = [0,1,2,3]
+    new_orient = -1
+    flood_value = 1000
+    for orient in orients:
+        #up
+        if orient == 0 and maze_y != 0:
+            if flood_array[maze_y-1][maze_x] < flood_value and not has_wall(maze[maze_y][maze_x], orient):
+                new_orient = orient
+                flood_value = flood_array[maze_y-1][maze_x]
+        #down
+        if orient == 2 and maze_y != len(flood_array) - 1:
+            if flood_array[maze_y+1][maze_x] < flood_value and not has_wall(maze[maze_y][maze_x], orient):
+                new_orient = orient
+                flood_value = flood_array[maze_y+1][maze_x]
+        #left
+        if orient == 3 and maze_x != 0:
+            if flood_array[maze_y][maze_x-1] < flood_value and not has_wall(maze[maze_y][maze_x], orient):
+                new_orient = orient
+                flood_value = flood_array[maze_y][maze_x-1]
+        #right
+        if orient == 1 and maze_x != len(flood_array[0]) - 1:
+            if flood_array[maze_y][maze_x+1] < flood_value and not has_wall(maze[maze_y][maze_x], orient):
+                new_orient = orient
+                flood_value = flood_array[maze_y][maze_x+1]
+
+    return new_orient
+
+def move(publisher, new_orient, maze_x, maze_y):
+    if new_orient == 0:
+        maze_y -= 1
+    if new_orient == 1:
+        maze_x += 1
+    if new_orient == 2:
+        maze_y += 1
+    if new_orient == 3:
+        maze_x -= 1
+
+    turn(publisher, new_orient)
+    go_forward(publisher)
+
+    return maze_x, maze_y
 
 
 rospy.init_node('labyrinth_mapper')
@@ -333,7 +393,7 @@ maze = [[0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
-        [0,0,0,16,0,0,0],
+        [0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
@@ -341,8 +401,8 @@ maze = [[0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0]]
 
-#while not rospy.is_shutdown():
-
-new_flood = flood_fill(maze, goal_x, goal_y)
-for asd in new_flood:
-    print(asd)
+while maze_x != goal_x or maze_y != goal_y:
+    maze = update_maze(maze, maze_x, maze_y)
+    flood = flood_fill(maze, goal_x, goal_y)
+    new_orient = find_next_cell(flood, maze, maze_x, maze_y)
+    maze_x, maze_y = move(pub_vel, new_orient, maze_x, maze_y)
