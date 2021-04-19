@@ -147,19 +147,16 @@
       <material name="green"/>
     </visual>
   </link>
+  
+  <!-- IMU -->
+  <joint name="imu_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="base_link"/>
+    <child link="imu_link" />
+  </joint>
 
-  <!-- STEP 4 - Gazebo colors -->
-  <!--gazebo reference="left_wheel">
-    <material>Gazebo/Green</material>
-  </gazebo>
-
-  <gazebo reference="right_wheel">
-    <material>Gazebo/Green</material>
-  </gazebo>
-
-  <gazebo reference="base_link">
-    <material>Gazebo/Pink</material>
-  </gazebo-->
+  <link name="imu_link">
+  </link>
 
 <!-- Lidar -->
   <joint type="fixed" name="scan_joint">
