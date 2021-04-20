@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <launch>
 
-  <!-- Ground truth map file -->
-  <arg name="map_file" default="$(find bme_ros_micromouse)/maps/map.yaml"/>
-
   <node pkg="gmapping" type="slam_gmapping" name="gmapping" output="screen" >
     <param name="odom_frame" value="odom" />
     <param name="base_frame" value="base_link" />
@@ -55,10 +52,5 @@
     <param name="lasamplerange" value="0.005"/>
     <param name="lasamplestep" value="0.005"/>
   </node> 
-
-  <!-- Ground truth map Server -->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
-    <remap from="map" to="map_groundtruth"/>
-  </node>
 
 </launch>
