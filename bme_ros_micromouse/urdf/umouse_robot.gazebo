@@ -24,6 +24,24 @@
     </plugin>
   </gazebo>
 
+  <!-- IMU -->
+  <gazebo>
+    <plugin name="imu_controller" filename="libhector_gazebo_ros_imu.so">
+      <robotNamespace>/</robotNamespace>
+      <updateRate>50.0</updateRate>
+      <bodyName>imu_link</bodyName>
+      <topicName>imu/data</topicName>
+      <accelOffset>0.0 0.0 0.0</accelOffset>
+      <accelDrift>0.005 0.005 0.005</accelDrift>
+      <accelGaussianNoise>0.005 0.005 0.005</accelGaussianNoise>
+      <rateOffset>0.0 0.0 0.0</rateOffset>
+      <rateDrift>0.005 0.005 0.005 </rateDrift>
+      <rateGaussianNoise>0.005 0.005 0.005 </rateGaussianNoise>
+      <yawDrift>0.005</yawDrift>
+      <yawGaussianNoise>0.005</yawGaussianNoise>
+    </plugin>
+  </gazebo>
+
   <!-- Lidar -->
   <gazebo reference="scan_link">
     <sensor type="ray" name="scan_sensor">
@@ -43,7 +61,7 @@
         <range>
           <min>0.05</min>
           <max>5.0</max>
-          <resolution>0.01</resolution>
+          <resolution>0.005</resolution>
         </range>
         <noise>
           <type>gaussian</type>
@@ -52,7 +70,7 @@
                stddev of 0.01m will put 99.7% of samples within 0.03m of the true
                reading. -->
           <mean>0.0</mean>
-          <stddev>0.01</stddev>
+          <stddev>0.005</stddev>
         </noise>
       </ray>
       <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so">

@@ -3,7 +3,7 @@
 <launch>
 
   <!-- RViz config file -->
-  <arg name="rvizconfig" default="$(find bme_ros_micromouse)/rviz/world.rviz" />
+  <arg name="rvizconfig" default="$(find bme_ros_micromouse)/rviz/test.rviz" />
   <arg name="model" default="$(find bme_ros_micromouse)/urdf/umouse_robot.xacro"/>
 
   <!-- Robot pose -->
@@ -37,5 +37,5 @@
 
   <!-- Launch RViz -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
-
+  
 </launch>

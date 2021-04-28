@@ -33,6 +33,18 @@ def check_orient(threshold = 0.04):
     # left
     elif (3.14 - threshold < yaw and yaw < 3.14156) or (-3.14156 < yaw and yaw < -3.14 + threshold):
         orient = 3
+    ## up and right
+    #if 0.78 - threshold < yaw and yaw < 0.78 + threshold:
+    #    orient = 4
+    ## down and right
+    #elif -0.78 - threshold < yaw and yaw < -0.78 + threshold:
+    #    orient = 5
+    ## down and left
+    #elif -2.35 - threshold < yaw and yaw < -2.35 + threshold:
+    #    orient = 6
+    ## up and left
+    #elif 2.35 - threshold < yaw and yaw < 2.35 + threshold:
+    #    orient = 7
     else:
         orient = -1
 
@@ -389,17 +401,29 @@ orient = 0
 maze_x, maze_y = 0, 10
 goal_x, goal_y = 6, 0
 # 7x11
-maze = [[0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0]]
+#maze = [[0,0,0,0,0,0,0],
+#        [0,0,0,0,0,0,0],
+#        [0,0,0,0,0,0,0],
+#        [0,0,0,0,0,0,0],
+#        [0,0,0,0,0,0,0],
+#        [0,0,0,0,0,0,0],
+#        [0,0,0,0,0,0,0],
+#        [0,0,0,0,0,0,0],
+#        [0,0,0,0,0,0,0],
+#        [0,0,0,0,0,0,0],
+#        [0,0,0,0,0,0,0]]
+
+maze = [[0, 0, 0, 0, 0, 2, 0],
+        [0, 0, 0, 0, 0, 3, 0],
+        [0, 0, 0, 0, 0, 1, 0],
+        [0, 2, 12, 13, 0, 4, 7],
+        [8, 4, 2, 4, 2, 2, 6],
+        [1, 0, 0, 0, 0, 0, 0],
+        [9, 0, 0, 0, 0, 0, 0],
+        [9, 0, 0, 0, 0, 0, 0],
+        [9, 0, 0, 0, 0, 0, 0],
+        [9, 0, 0, 0, 0, 0, 0],
+        [11, 0, 0, 0, 0, 0, 0]]
 
 while maze_x != goal_x or maze_y != goal_y:
     maze = update_maze(maze, maze_x, maze_y)

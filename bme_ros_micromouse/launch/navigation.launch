@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Map file for localization -->
+  <arg name="map_file" default="$(find bme_ros_micromouse)/maps/saved_maps/map.yaml"/>
+
+  <!-- Launch our Gazebo world -->
+  <include file="$(find bme_ros_micromouse)/launch/amcl.launch">
+    <!-- all vars that included.launch requires must be set -->
+    <arg name="map_file" value="$(arg map_file)" />
+  </include>
+
+  <!-- Move Base -->
+  <node name="move_base" pkg="move_base" type="move_base" respawn="false" output="screen">
+    <rosparam file="$(find bme_ros_micromouse)/config/move_base_params.yaml" command="load" />
+    <rosparam file="$(find bme_ros_micromouse)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find bme_ros_micromouse)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find bme_ros_micromouse)/config/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find bme_ros_micromouse)/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find bme_ros_micromouse)/config/dwa_local_planner_params.yaml" command="load" />
+  </node>
+
+</launch>
