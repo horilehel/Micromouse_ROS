@@ -9,7 +9,7 @@ planner_frequency: 1.0
 planner_patience: 5.0
 
 oscillation_timeout: 10.0
-oscillation_distance: 0.2
+oscillation_distance: 0.04
 
 base_local_planner: "dwa_local_planner/DWAPlannerROS" #alternatives: "base_local_planner/TrajectoryPlannerROS"
 
@@ -27,7 +27,7 @@ recovery_behaviors:
     type: 'rotate_recovery/RotateRecovery'
 
 conservative_reset:
-  reset_distance: 3.0
+  reset_distance: 0.3
   layer_names: ["obstacle_layer"]
 
 aggressive_reset:
@@ -35,10 +35,10 @@ aggressive_reset:
   layer_names: ["obstacle_layer"]
 
 move_slow_and_clear:
-  clearing_distance: 0.5
+  clearing_distance: 0.02
   limited_trans_speed: 0.25
   limited_rot_speed: 0.45
-  limited_distance: 0.3
+  limited_distance: 0.03
 
 rotate_recovery:
   max_vel_theta: 0.3

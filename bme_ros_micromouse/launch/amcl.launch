@@ -25,15 +25,15 @@
     <param name="initial_pose_y" value="$(arg initial_pose_y)"/>
     <param name="initial_pose_a" value="$(arg initial_pose_a)"/>
     <!-- Parameters for inital particle distribution -->
-    <param name="initial_cov_xx" value="9.0"/>
-    <param name="initial_cov_yy" value="9.0"/>
-    <param name="initial_cov_aa" value="9.8"/>
+    <param name="initial_cov_xx" value="0.0"/>
+    <param name="initial_cov_yy" value="0.0"/>
+    <param name="initial_cov_aa" value="0.0"/>
     <!-- Dynamically adjusts particles for every iteration -->
     <param name="min_particles" value="500"/>
     <param name="max_particles" value="2000"/>
     <!-- Perform update parameters -->
-    <param name="update_min_d" value="0.1"/>
-    <param name="update_min_a" value="0.1"/>
+    <param name="update_min_d" value="0.01"/>
+    <param name="update_min_a" value="0.01"/>
     <param name="laser_model_type" value="likelihood_field"/>
     <param name="laser_max_range" value="-1.0"/>
     <param name="odom_alpha1" value="0.1"/>
