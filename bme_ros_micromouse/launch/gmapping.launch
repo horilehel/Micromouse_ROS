@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 <launch>
 
+  <!-- Ground truth map file -->
+  <arg name="map_file" default="$(find bme_ros_micromouse)/maps/map.yaml"/>
+
   <node pkg="gmapping" type="slam_gmapping" name="gmapping" output="screen" >
     <param name="odom_frame" value="odom" />
     <param name="base_frame" value="base_link" />
@@ -29,7 +32,7 @@
     <param name="stt" value="0.02"/>
 
     <!-- Process a scan each time the robot translates this far  -->
-    <param name="linearUpdate" value="0.1"/>
+    <param name="linearUpdate" value="0.01"/>
 
     <!-- Process a scan each time the robot rotates this far  -->
     <param name="angularUpdate" value="0.1"/>
@@ -40,17 +43,22 @@
     <param name="particles" value="30"/>
 
     <!-- Initial map size  -->
-    <param name="xmin" value="-10.0"/>
-    <param name="ymin" value="-10.0"/>
-    <param name="xmax" value="10.0"/>
-    <param name="ymax" value="10.0"/>
+    <param name="xmin" value="-8.0"/>
+    <param name="ymin" value="-8.0"/>
+    <param name="xmax" value="8.0"/>
+    <param name="ymax" value="8.0"/>
 
     <!-- Processing parameters (resolution of the map)  -->
-    <param name="delta" value="0.025"/>
-    <param name="llsamplerange" value="0.01"/>
-    <param name="llsamplestep" value="0.01"/>
-    <param name="lasamplerange" value="0.005"/>
-    <param name="lasamplestep" value="0.005"/>
+    <param name="delta" value="0.0025"/>
+    <param name="llsamplerange" value="0.001"/>
+    <param name="llsamplestep" value="0.001"/>
+    <param name="lasamplerange" value="0.0005"/>
+    <param name="lasamplestep" value="0.0005"/>
   </node> 
+
+  <!-- Ground truth map Server -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
+    <remap from="map" to="map_groundtruth"/>
+  </node>
 
 </launch>
