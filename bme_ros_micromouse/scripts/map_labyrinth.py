@@ -16,10 +16,11 @@ def get_odometry_data(msg):
 
     x = msg.pose.pose.position.x
     y = msg.pose.pose.position.y
-
+    print(x)
+    print(y)
     check_orient()
 
-def check_orient(threshold = 0.04):
+def check_orient(threshold = 0.02):
     global orient
     # up
     if 1.57 - threshold < yaw and yaw < 1.57 + threshold:
@@ -259,7 +260,7 @@ def go_forward(publisher):
 
     move.linear.x = 0
     publisher.publish(move)
-    rospy.sleep(3)
+    rospy.sleep(1)
 
 def turn(publisher, new_orient):
     curr_yaw = yaw
@@ -278,7 +279,7 @@ def turn(publisher, new_orient):
         prev_orient_diff = orient_diff
     move.angular.z = 0
     publisher.publish(move)
-    rospy.sleep(3)
+    rospy.sleep(1)
 
 def flood_fill(maze, goal_x, goal_y):
     flood_array = []
@@ -383,9 +384,9 @@ rospy.loginfo("Labyrinth mapping started!")
 sub_odom = rospy.Subscriber ('/odom', Odometry, get_odometry_data)
 sub_lidar = rospy.Subscriber('/scan', LaserScan, get_lidar_data)
 pub_vel = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
-rate = rospy.Rate(10)
+rate = rospy.Rate(100)
 
-DEACCELERATION_DIST = 0.18
+DEACCELERATION_DIST = 0
 
 roll, pitch, yaw = 0, 0, 1.57
 x, y = 0, 0

@@ -4,13 +4,13 @@
   <gazebo>
     <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
       <legacyMode>false</legacyMode>                         <!-- Set to true to swap right and left wheels, defaults to true -->
-      <updateRate>10</updateRate>                            <!-- Plugin update rate in Hz -->
+      <updateRate>100</updateRate>                            <!-- Plugin update rate in Hz -->
       <leftJoint>left_wheel_joint</leftJoint>                <!-- Name of left joint, defaults to `left_joint` -->
       <rightJoint>right_wheel_joint</rightJoint>             <!-- Name of right joint, defaults to `right_joint` -->
       <wheelSeparation>0.1</wheelSeparation>                 <!-- The distance from the center of one wheel to the other, in meters, defaults to 0.34 m -->
       <wheelDiameter>0.05</wheelDiameter>                     <!-- Diameter of the wheels, in meters, defaults to 0.15 m -->
       <wheelTorque>3</wheelTorque>                          <!-- Maximum torque which the wheels can produce, in Nm, defaults to 5 Nm -->
-      <wheelAcceleration>1.0</wheelAcceleration>             <!-- Wheel acceleration, in rad/s^2, defaults to 0.0 rad/s^2 -->
+      <wheelAcceleration>0.0</wheelAcceleration>             <!-- Wheel acceleration, in rad/s^2, defaults to 0.0 rad/s^2 -->
       <commandTopic>cmd_vel</commandTopic>                   <!-- Topic to receive geometry_msgs/Twist message commands, defaults to `cmd_vel` -->
       <odometryTopic>odom</odometryTopic>                    <!-- Topic to publish nav_msgs/Odometry messages, defaults to `odom` -->
       <odometryFrame>odom</odometryFrame>                    <!-- Odometry frame, defaults to `odom` -->
