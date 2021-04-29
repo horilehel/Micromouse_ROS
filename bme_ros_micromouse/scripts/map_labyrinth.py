@@ -400,7 +400,7 @@ cmd_vel.angular.z = 0
 
 orient = 0
 maze_x, maze_y = 0, 10
-goal_x, goal_y = 6, 0
+goals = [[6, 0], [6, 10]]
 # 7x11
 #maze = [[0,0,0,0,0,0,0],
 #        [0,0,0,0,0,0,0],
@@ -426,8 +426,13 @@ maze = [[0, 0, 0, 0, 0, 2, 0],
         [9, 0, 0, 0, 0, 0, 0],
         [11, 0, 0, 0, 0, 0, 0]]
 
-while maze_x != goal_x or maze_y != goal_y:
-    maze = update_maze(maze, maze_x, maze_y)
-    flood = flood_fill(maze, goal_x, goal_y)
-    new_orient = find_next_cell(flood, maze, maze_x, maze_y)
-    maze_x, maze_y = move(pub_vel, new_orient, maze_x, maze_y)
+while goals:
+    goal_x = goals[0][0]
+    goal_y = goals[0][1]
+    del goals[0]
+
+    while maze_x != goal_x or maze_y != goal_y:
+        maze = update_maze(maze, maze_x, maze_y)
+        flood = flood_fill(maze, goal_x, goal_y)
+        new_orient = find_next_cell(flood, maze, maze_x, maze_y)
+        maze_x, maze_y = move(pub_vel, new_orient, maze_x, maze_y)
