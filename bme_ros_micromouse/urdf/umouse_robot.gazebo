@@ -4,10 +4,10 @@
   <gazebo>
     <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
       <legacyMode>false</legacyMode>                         <!-- Set to true to swap right and left wheels, defaults to true -->
-      <updateRate>100</updateRate>                            <!-- Plugin update rate in Hz -->
+      <updateRate>10</updateRate>                            <!-- Plugin update rate in Hz -->
       <leftJoint>left_wheel_joint</leftJoint>                <!-- Name of left joint, defaults to `left_joint` -->
       <rightJoint>right_wheel_joint</rightJoint>             <!-- Name of right joint, defaults to `right_joint` -->
-      <wheelSeparation>0.1</wheelSeparation>                 <!-- The distance from the center of one wheel to the other, in meters, defaults to 0.34 m -->
+      <wheelSeparation>0.075</wheelSeparation>                 <!-- The distance from the center of one wheel to the other, in meters, defaults to 0.34 m -->
       <wheelDiameter>0.05</wheelDiameter>                     <!-- Diameter of the wheels, in meters, defaults to 0.15 m -->
       <wheelTorque>3</wheelTorque>                          <!-- Maximum torque which the wheels can produce, in Nm, defaults to 5 Nm -->
       <wheelAcceleration>0.0</wheelAcceleration>             <!-- Wheel acceleration, in rad/s^2, defaults to 0.0 rad/s^2 -->
@@ -21,24 +21,6 @@
       <publishWheelJointState>false</publishWheelJointState> <!-- Set to true to publish sensor_msgs/JointState on /joint_states for the wheel joints, defaults to false -->
       <publishTf>1</publishTf>                               <!-- Set to 1 (true) to publish transforms from Gazebo, defaults to 1 -->
       <rosDebugLevel>na</rosDebugLevel>                      <!-- ROS Debug level, defaults to na -->
-    </plugin>
-  </gazebo>
-
-  <!-- IMU -->
-  <gazebo>
-    <plugin name="imu_controller" filename="libhector_gazebo_ros_imu.so">
-      <robotNamespace>/</robotNamespace>
-      <updateRate>50.0</updateRate>
-      <bodyName>imu_link</bodyName>
-      <topicName>imu/data</topicName>
-      <accelOffset>0.0 0.0 0.0</accelOffset>
-      <accelDrift>0.005 0.005 0.005</accelDrift>
-      <accelGaussianNoise>0.005 0.005 0.005</accelGaussianNoise>
-      <rateOffset>0.0 0.0 0.0</rateOffset>
-      <rateDrift>0.005 0.005 0.005 </rateDrift>
-      <rateGaussianNoise>0.005 0.005 0.005 </rateGaussianNoise>
-      <yawDrift>0.005</yawDrift>
-      <yawGaussianNoise>0.005</yawGaussianNoise>
     </plugin>
   </gazebo>
 
