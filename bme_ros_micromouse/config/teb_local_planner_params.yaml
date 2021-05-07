@@ -3,7 +3,7 @@ TebLocalPlannerROS:
 # Robot Configuration Parameters - Kobuki
   controller_frequency: 10.0
 
-  max_vel_x: 0.1  # 0.55
+  max_vel_x: 0.3  # 0.55
   min_vel_x: 0.0 
 
   max_vel_y: 0.0  # diff drive robot
@@ -21,8 +21,8 @@ TebLocalPlannerROS:
   min_vel_theta: 0.1  # this is the min angular velocity when there is negligible translational velocity
   #theta_stopped_vel: 0.1
   
-  acc_lim_x: 0.5 
-  acc_lim_theta: 0.5
+  acc_lim_x: 0.2 
+  acc_lim_theta: 0.2
   acc_lim_y: 0.0      # diff drive robot
 
   min_turning_radius: 0.0
@@ -47,8 +47,8 @@ TebLocalPlannerROS:
   complete_global_plan: True
 
 # Trajectory Configuration Parameters
-  dt_ref: 0.3
-  dt_hysteresis : 0.1
+  dt_ref: 0.2
+  dt_hysteresis : 0.02
   min_samples: 3
   global_plan_overwrite_orientation : true
   global_plan_viapoint_sep : -0.1
@@ -62,11 +62,11 @@ TebLocalPlannerROS:
   shrink_horizon_min_duration: 10.0
 
 # Obstacle Parameters
-  min_obstacle_dist: 0.1
+  min_obstacle_dist: 0.06
   include_costmap_obstacles: true
-  costmap_obstacles_behind_robot_dist: 0.3
+  costmap_obstacles_behind_robot_dist: 0.2
   obstacle_poses_affected: 10
-  inflation_dist: 0.6
+  inflation_dist: 0.2
   include_dynamic_obstacles: false
   legacy_obstacle_association: false
   obstacle_association_force_inclusion_factor: 1.5
