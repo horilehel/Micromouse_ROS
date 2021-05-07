@@ -37,5 +37,7 @@
 
   <!-- Launch RViz -->
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+
+  <include file="$(find bme_ros_micromouse)/launch/laser_filter.launch"/>
   
 </launch>
