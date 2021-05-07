@@ -17,7 +17,8 @@
     <rosparam file="$(find bme_ros_micromouse)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
     <rosparam file="$(find bme_ros_micromouse)/config/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find bme_ros_micromouse)/config/global_costmap_params.yaml" command="load" />
-    <rosparam file="$(find bme_ros_micromouse)/config/dwa_local_planner_params.yaml" command="load" />
+    <!--rosparam file="$(find bme_ros_micromouse)/config/dwa_local_planner_params.yaml" command="load" /-->
+    <rosparam file="$(find bme_ros_micromouse)/config/teb_local_planner_params.yaml" command="load" />
   </node>
 
 </launch>
