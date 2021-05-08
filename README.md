@@ -139,27 +139,23 @@ A robot alvázát, kerekeit, a szenzorokat és ezeknek a megjelenítését és t
 
 Ahhoz, hogy használhassuk a modellünket a szimulációs környezetben, be kell még kötni a gazeboba a differenciálhajtáshoz és a lidarhoz szükséges pluginokat a `umouse_robot.gazebo`.
 
-
-
 # Laser filter
 
-# Labirintus feltérképező algoritmus
-```xml
-  <!-- Robot pose EKF for sensor fusion -->
-  <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
-    <remap from="imu_data" to="/imu/data"/>
-    <param name="output_frame" value="odom"/>
-    <param name="base_footprint_frame" value="base_footprint"/>
-    <param name="freq" value="30.0"/>
-    <param name="sensor_timeout" value="1.0"/>
-    <param name="odom_used" value="true"/>
-    <param name="imu_used" value="true"/>
-    <param name="vo_used" value="false"/>
-    <param name="gps_used" value="false"/>
-    <param name="debug" value="false"/>
-    <param name="self_diagnose" value="false"/>
-  </node>
+A robotunk teste 10cm hosszú és a közepén helyezkedik a lidar szenzor. Gyorsításkor és fékezéskor előfordult, hogy megbillent a robot, és a lidar "látta" a földet, ezért szűrjük a lidar jeleit és a lidar 8cm-es sugarú környezetén belül nem veszi figyelembe a jeleket. A filter beállításait a `my_laser_config.yaml` tartalmazza. 
+
+```yaml
+  scan_filter_chain:
+  - name: range
+    type: laser_filters/LaserScanRangeFilter
+    params:
+      use_message_range_limits: false
+      lower_threshold: 0.08
+      upper_threshold: .inf
+      lower_replacement_value: -.inf
+      upper_replacement_value: .inf
 ```
+
+# Labirintus feltérképező algoritmus
 
 # Mapping
 
