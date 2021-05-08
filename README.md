@@ -59,40 +59,42 @@
 
 # Videó az eredmények bemutatásáról
 
-<a href="https://youtu.be/XveJMrCh9vw"><img height="400" src="./assets/youtube1.png"></a>  
-<a href="https://youtu.be/6M7XvkN7sc0"><img height="400" src="./assets/youtube2.png"></a>  
-<a href="https://youtu.be/hxvz2DUILys"><img height="400" src="./assets/youtube3.png"></a>
+<a href="https://youtu.be/XveJMrCh9vw"><img height="400" src="./assets/youtube1.png"></a>
 
 # Tartalomjegyzék
-1. [Kezdőcsomag](#Kezdőcsomag)  
-2. [Gazebo világok](#Gazebo-világok)  
-3. [Ground truth térkép készítése](#Ground-truth-térkép-készítése)
-4. [IMU és odometria szenzorfúzió](#IMU-és-odometria-szenzorfúzió)  
-5. [Mapping](#Mapping)  
-5.1. [Hector SLAM](#Hector-SLAM)  
-5.2. [GMapping](#GMapping)  
-5.3. [Map saver](#Map-saver)
-6. [Lokalizáció](#Lokalizáció)  
-6.1. [AMCL](#AMCL)
-7. [Navigáció](#Navigáció)  
-7.1. [Recovery akciók](#Recovery-akciók)
-8. [Waypoint navigáció](#Waypoint-navigáció)  
-8.1. [Grafikusan a follow_waypoints csomaggal](#Grafikusan-a-follow_waypoints-csomaggal)  
-8.2. [Waypoint navigáció C++ ROS node-ból](#Waypoint-navigáció-C++-ROS-node-ból)
+1. [Projekt bemutása](#Projekt-bemutatása)
+2. [ROS Noetic telepítése (ha szükséges)](#ROS-Noetic-telepítése)  
+3. [Labirintus](#Labirintus)  
+4. [Robot](#Robot)
+5. [Labirintus feltérképező algoritmus](#Labirintus-feltérképező-algoritmus)  
+6. [Mapping](#Mapping)  
+6.1. [GMapping](#GMapping)  
+6.2. [Map saver](#Map-saver)
+7. [Lokalizáció](#Lokalizáció)  
+7.1. [AMCL](#AMCL)
+8. [Navigáció](#Navigáció)  
+8.1. [Recovery akciók](#Recovery-akciók)
+9. [Összefoglalás](#Összefoglalás)
 
-# Kezdőcsomag
-A lecke kezdőcsomagja épít az előző fejezetekre, de egy külön GIT repositoryból dolgozunk, így nem feltétele az előző csomagok megléte.
+# Projekt bemutatása
+Projektünk az alábbi feladatokból épült fel:
+1) Micromouse jellegű labirintus készítése.
+2) A labirintus tartalmazzon átlós haladást lehetővé tévő szakaszt.
+3) Labirintus feltérképezése.
+4) Útvonaltervezés a labirintuson való végigvezetésre saját ROS node-dal.
 
-A kiindulási projekt tartalmazza a Gazebo világ szimulációját, az alap differenciálhajtású MOGI robotunk modelljét és szimulációját, a kamera, IMU és Lidar szimulációját, valamint az alap launchfájlokat és RViz fájlokat.
+Dokumentációnkban részletesen bemutatjuk az egyes feladatok megvalósítását.
 
-A kezdőprojekt letöltése:
+A projekt során a ROS Noetic disztribúciót használtuk, így ha ez nincs telepítve, akkor szükség van a következő fejeztben bemutatott lépések végrehajtására, mielőtt a git repository le lenne klónozva.
+
+A teljes csomag (amely már minden szükséges fájlt tartalmaz) letölthető az alábbi paranncsal:
 ```console
-git clone -b starter-branch https://github.com/MOGI-ROS/Week-7-8-Navigation.git
+git clone https://github.com/horilehel/Micromouse_ROS.git
 ```
 
-A kezdőprojekt tartalma a következő:
+A projekt tartalma:
 ```console
-david@DavidsLenovoX1:~/bme_catkin_ws/src/Week-7-8-Navigation/bme_ros_navigation$ tree
+beni9708@DESKTOP-GSPKIBL:~/catkin_ws/src/Micromouse_ROS/bme_ros_micromouse$ tree
 .
 ├── CMakeLists.txt
 ├── config
@@ -101,49 +103,68 @@ david@DavidsLenovoX1:~/bme_catkin_ws/src/Week-7-8-Navigation/bme_ros_navigation$
 │   ├── global_costmap_params.yaml
 │   ├── global_planner_params.yaml
 │   ├── local_costmap_params.yaml
-│   └── move_base_params.yaml
+│   ├── move_base_params.yaml
+│   ├── my_laser_config.yaml
+│   └── teb_local_planner_params.yaml
 ├── launch
+│   ├── amcl.launch
 │   ├── check_urdf.launch
+│   ├── gmapping.launch
+│   ├── laser_filter.launch
+│   ├── navigation.launch
 │   ├── spawn_robot.launch
 │   ├── teleop.launch
 │   └── world.launch
 ├── maps
-│   ├── corridor_hector.yaml
-│   ├── corridor.pgm
-│   ├── corridor.yaml
-│   ├── map_hector.yaml
-│   ├── map.pgm
-│   ├── map.yaml
 │   └── saved_maps
-│       ├── corridor.pgm
-│       ├── corridor.yaml
 │       ├── map.pgm
-│       └── map.yaml
+│       ├── map.yaml
+│       ├── map_old.pgm
+│       └── map_old.yaml
 ├── meshes
+│   ├── body.dae
 │   ├── lidar.dae
-│   ├── mogi_bot.dae
 │   └── wheel.dae
 ├── package.xml
 ├── rviz
-│   ├── check_urdf.rviz
-│   └── mogi_world.rviz
+│   ├── test.rviz
+│   ├── umouse_robot.rviz
+│   └── world.rviz
+├── scripts
+│   ├── map_labyrinth.py
+│   ├── map_labyrinth60.py
+│   └── nav_goals.py
 ├── urdf
 │   ├── materials.xacro
-│   ├── mogi_bot.gazebo
-│   └── mogi_bot.xacro
+│   ├── umouse_robot.gazebo
+│   └── umouse_robot.xacro
 └── worlds
-    ├── 20m_corridor
-    │   ├── model.config
-    │   └── model.sdf
-    ├── 20m_corridor_empty.world
-    ├── 20m_corridor_features.world
-    ├── map_creation
-    │   ├── 20m_corridor_map_creation.world
-    │   └── world_map_creation.world
-    └── world_modified.world
+    ├── labyrinth_30cm.world
+    ├── labyrinth_3m.world
+    └── labyrinth_60cm.world
 ```
 
-# Gazebo világok
+# ROS Noetic telepítése
+
+Ahhoz, hogy a proejktünkben bemutatott funkciók biztosan működjenek, ROS Noeticre van szükség. Ha már fel van telepítve akkor ez a fejezet kihagyható, ha nincs, akkor pedig az alábbi parancsok futtatásával feltepíthető:
+```console
+sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+sudo apt update
+sudo apt install ros-noetic-desktop-full
+```
+Ezután a `.bashrc` fájlt kiegészíthetjük, a `source /opt/ros/noetic/setup.bash` paranncsal. Ezt akkor érdemes megtenni, ha csak ezt a disztribúciót akarjuk használni a gépen. Így nem kell kézzel betölteni a ROS alap környezetét.
+
+Ezt követően létre kell hoznunk a Noetichez tartozó Catkin workspace-t:
+```console
+cd ~
+mkdir -p catkin_ws/src
+cd catkin_ws
+catkin_make
+```
+A `.bashrc` fájlt ismét kiegészíthetjük, most a `source ~/catkin_ws/devel/setup.bash` paranncsal. Ezt akkor érdemes megtenni, ha nem akarjuk minden új terminálban manuálisan lefuttatni a kódót.
+
+# Labirintus
 
 A fejezet során a már jól megismert `world_modified.world` Gazebo világot fogjuk használni, amit a következő paranccsal bármikor ki tudunk próbálni:
 ```console
@@ -196,7 +217,7 @@ sudo apt install ros-$(rosversion -d)-interactive-marker-twist-server
 ```
 ![alt text][image34]
 
-# Ground truth térkép készítése
+# Robot
 
 Lehetőségünk van a Gezbo világunkból egy úgy nevezett ground truth térképet készíteni. Ehhez a `pgm_map_creator` csomagot használhatjuk.
 Ez nem egy hivatalos ROS csomag, így letölthető a tárgy GitHub oldaláról a catkin workspace-etekbe:
@@ -249,7 +270,7 @@ Előre elkészítettem a grund truth térképet a `world_modified.world` és a `
 
 A `pgm_map_creator` alapértelmezetten a saját csomagjának a maps mappájába menti a térkép fájlokat. A `.pgm` fájlok egyszerű bitmap-ek, többek között megnyithatók a GIMP vagy Inkscape szoftverekkel.
 
-# IMU és odometria szenzorfúzió
+# Labirintus feltérképező algoritmus
 Vessünk még egy pillantást a `spawn_robot.launch` fájlra! Ebben ugyanis van pár változás a korábbiakhoz képest. Bekerült egy új node:
 ```xml
   <!-- Robot pose EKF for sensor fusion -->
@@ -279,160 +300,10 @@ Nézzük is meg a TF tree-t, ami a `rosrun rqt_tf_tree rqt_tf_tree` paranccsal t
 Valamint a node-jaink összekötését is vizsgáljuk meg az `rqt_graph` paranccsal:
 ![alt text][image7]
 
-## Hibakeresés
-Hibakeresés miatt, kapcsoljuk most vissza a `publishOdomTF`-et a Gazebo pluginban, és nézzük meg mi történik!
-
-A robotunk furcsán ugrál az RVizben megjelenítve, de szerencsére ennél nagyobb baj nem történt:
-![alt text][image8]
-
-Azokban az esetekben, amikor sejtjük, hogy valami nincs rendben a TF-fel, sokat segít a `roswtf` parancssoros tool, ami ebben az esetben is azonnal észrevette a hibát:
-```console
-...
-Found 1 error(s).
-
-ERROR TF multiple authority contention:
- * node [/robot_pose_ekf] publishing transform [base_footprint] with parent [odom] already published by node [/gazebo]
- * node [/gazebo] publishing transform [base_footprint] with parent [odom] already published by node [/robot_pose_ekf]
-```
-
-A végén ne felejtsük el visszaállítani a Gazebo plugint!
-
 # Mapping
 
 Térképezésre általában SLAM (simultaneous localization and mapping) algoritmusokat használunk, amik képesek egyszerre létrehozni a környezet térképét és meghatározni a robot pozícióját és orientációját a térképen (lokalizáció).
 Az elmúlt években egyre inkább terjednek a mono, stereo vagy RGBD kamerát használó SLAM algoritmusok, de mi most két Lidart használó algoritmust próbálunk ki.
-
-## Hector SLAM
-
-A [Hector SLAM](http://wiki.ros.org/hector_mapping) a Darmstadt-i egyetem fejlesztése, nagyon egyszerű használni, akár szabd kézben tartott Lidarral is, ugyanis pusztán csak a Lidar méréseit használja a SLAM probléma megoldása során.
-Ez az előnye egyben a hátránya is, mivel nem használja a robot odometriáját, így speciális körülmények között nem használható, látunk is erre példát az üres folyosó esetén.
-
-Előtte azonban próbáljuk ki a Hector SLAM-et a már megszokott Gazebo világunkon.
-
-Természetesen a Hector SLAM nem része az alap ROS telepítésnek, így ezt fel kell tennünk a Linuxunk csomagkezelőjével:
-```console
-sudo apt install ros-$(rosversion -d)-hector-slam 
-```
-
-Hozzuk létre a `hector_slam.launch` fájlt:
-```xml
-<?xml version="1.0"?>
-<launch>
-
-  <!-- Ground truth map file -->
-  <arg name="map_file" default="$(find bme_ros_navigation)/maps/map_hector.yaml"/>
-
-  <node pkg="hector_mapping" type="hector_mapping" name="hector_mapping" output="screen">
-    <param name="base_frame" value="base_link" />
-    <param name="odom_frame" value="odom"/>
-    <param name="output_timing" value="false"/>
-    <param name="use_tf_scan_transformation" value="true"/>
-    <param name="use_tf_pose_start_estimate" value="false"/>
-    <param name="scan_topic" value="scan"/>
-    <!-- Map size / start point -->
-    <param name="map_resolution" value="0.025"/>
-    <param name="map_size" value="2048"/>
-    <param name="map_start_x" value="0.5"/>
-    <param name="map_start_y" value="0.5" />
-    <!--param name="laser_z_min_value" value="-2.5" /-->
-    <!--param name="laser_z_max_value" value="3.5" /-->
-    <!-- Map update parameters -->
-    <param name="update_factor_free" value="0.4"/>
-    <param name="update_factor_occupied" value="0.7" />    
-    <param name="map_update_distance_thresh" value="0.6"/>
-    <param name="map_update_angle_thresh" value="0.9" />
-    <param name="pub_map_odom_transform" value="true"/>
-    <param name="pub_drawings" value="true"/>
-    <param name="pub_debug_output" value="true"/>
-  </node>
-
-  <!-- Ground truth map Server -->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
-    <remap from="map" to="map_groundtruth"/>
-  </node>
-
-</launch>
-```
-
->A ground truth térképünket a `map_server` node fogja adni, ezt szintén fel kell telepítsük a használatához:
->```console
->sudo apt install ros-$(rosversion -d)-map-server 
->```
-
-Majd indítsuk el a világ és a robot szimulációját:
-
-```console
-roslaunch bme_ros_navigation spawn_robot.launch
-```
-
-A Hector SLAM algoritmust:
-```console
-roslaunch bme_ros_navigation hector_slam.launch
-```
-
-Valamint a távirányítót:
-```console
-roslaunch bme_ros_navigation teleop.launch
-```
-
-Az RViz konfigurációt úgy állítottam be, hogy a ground truth térképet lila színnel vetítse a háttérbe.
-![alt text][image14]
-
-Vezessük körbe a robotunkat:
-![alt text][image15]
-
-Vessünk egy pillantást az rqt_graph-ra:
-
-![alt text][image12]
-
-### Üres folyosó
-
-Próbáljuk ki a Hector SLAM-et az üres folyosón, indítsuk el a szimulációt a folyosóval:
-```console
-roslaunch bme_ros_navigation spawn_robot.launch world:='$(find bme_ros_navigation)/worlds/20m_corridor_empty.world' x:=-7 y:=2 
-```
-
-Indítsuk el a Hector SLAM-et a megfelelő ground truth térképpel:
-```console
-roslaunch bme_ros_navigation hector_slam.launch map_file:='$(find bme_ros_navigation)/maps/corridor_hector.yaml'
-```
-
-És természetesen indítsunk egy távirányítót is:
-```console
-roslaunch bme_ros_navigation teleop.launch
-```
-![alt text][image18]
-
-Vezessük végig a robotot a folyosón:
-
-![alt text][image17]
-
-És nézzük meg a térképet:
-
-![alt text][image16]
-
-Láthatjuk, hogy a pusztán a lidar jeleire támaszkodó algoritmus jelentős hibát (kb 10m) szedett össze, a folyosón az 5m érzékelési távolsággal rendelkező lidar használata során. Mekkora lenne a hiba egy 30m hosszú folyosón?
-
-### Folyosó tárgyakkal
-
-Nézzük meg, hogy segít-e a Hector SLAM-nek ha vannak tárgyak a folyosón!
-
-Indítsuk el a szimulációt és a többi node-ot, ahogy az előbb:
-```console
-roslaunch bme_ros_navigation spawn_robot.launch world:='$(find bme_ros_navigation)/worlds/20m_corridor_features.world' x:=-7 y:=2
-```
-
-```console
-roslaunch bme_ros_navigation hector_slam.launch map_file:='$(find bme_ros_navigation)/maps/corridor_hector.yaml'
-```
-
-```console
-roslaunch bme_ros_navigation teleop.launch
-```
-
-![alt text][image19]
-
-A folyosón jól vizsgázott a Hector SLAM abban az esetben, ha voltak azonosítható jellegzeteségek a térképezés során.
 
 ## GMapping
 
@@ -864,295 +735,4 @@ Ezután már kijelölhetjük az úticélt:
 ![alt text][image47]
 ![alt text][image48]
 
-# Waypoint navigáció
-
-Waypoint navigáció esetén nem kézzel fogjuk megadni a következő célpontot, miután a robot elérte az előzőt, hanem előre definiáljuk a waypointokat, majd a robot autonóm módon végig járja ezeket a pontokat.
-
-A waypoint navigációhoz [ezt a csomagot](https://github.com/MOGI-ROS/follow_waypoints) fogjuk használni.
-Töltsük le a catkin workspace-be és fordítsuk újra:
-```console
-git clone https://github.com/MOGI-ROS/follow_waypoints
-```
-
-## Grafikusan a follow_waypoints csomaggal
-
-Adjuk hozzá a csomagot a `navigation.launch` fájlunkhoz:
-
-```xml
-  <!-- Follow waypoints -->
-  <param name="wait_duration" value="2.0"/>
-  <param name="waypoints_to_follow_topic" value="/waypoint"/>
-  <node pkg="follow_waypoints" type="follow_waypoints" name="follow_waypoints" output="screen">
-    <param name="goal_frame_id" value="map"/>
-  </node>
-```
-
-Ahhoz, hogy waypointokat adjunk meg az RViz-en keresztül a pose estimate eszközt fogjuk használni (amit korábban arra használtunk, hogy az AMCL kezdeti pozícióját adjuk meg vele). Ezúttal ez az eszköz waypointokat fog szolgáltatni nekünk, amiket a `waypoint` topikba szeretnénk küldeni. Ehhez remap-eljük az RViz topic-ját a `spawn_robot.launch` fájlban.
-
-```xml
-<remap from="initialpose" to="waypoint" />
-```
-
-Indítsuk el a szimulációt és a navigációt:
-```console
-roslaunch bme_ros_navigation spawn_robot.launch
-```
-```console
-roslaunch bme_ros_navigation navigation.launch
-```
-
-Majd adjuk meg a waypointokat az RViz segítségével:
-![alt text][image49]
-
-Ha a waypointokat letettük a waypointok követését a következő service hívással tudjuk elindítani:
-```console
-rosservice call /path_ready {}
-```
-![alt text][image50]
-
-### Patrol mode
-A `follow_waypoints` csomag lehetővé teszi a patrol módot is, tehát a robotunk az utolsó waypoint elérése után kezdi az útvonalat elölről. A patrol módot legegyszerűbben az `rqt_reconfigure` segtségével tudjuk aktiválni.
-
-```console
-rosrun rqt_reconfigure rqt_reconfigure
-```
-![alt text][image51]
-
-Jelöljük ki a waypointokat:
-![alt text][image52]
-
-Majd indítsuk el a navigációt:
-```console
-rosservice call /path_ready {}
-```
-![alt text][image53]
-
-
-## Waypoint navigáció C++ ROS node-ból
-
-A navigációs stacket azonban nem csak az RViz felületén tudjuk irányítani, hanem a `move_base` C++ vagy Python API-ján keresztül is.
-
-Hozzuk létre a `nav_goals.cpp` fájlt a `src` mappában:
-
-```cpp
-#include "actionlib/client/simple_action_client.h"
-#include "move_base_msgs/MoveBaseAction.h"
-#include "ros/ros.h"
-#include "tf/tf.h"
-
-// Define a client for to send goal requests to the move_base server through a
-// SimpleActionClient
-typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>
-    MoveBaseClient;
-
-int main(int argc, char **argv) {
-  // Initialize the nav_goals node
-  ros::init(argc, argv, "nav_goals");
-
-  // tell the action client that we want to spin a thread by default
-  MoveBaseClient ac("move_base", true);
-
-  // Wait 5 sec for move_base action server to come up
-  while (!ac.waitForServer(ros::Duration(5.0))) {
-    ROS_INFO("Waiting for the move_base action server to come up");
-  }
-
-  move_base_msgs::MoveBaseGoal goal;
-
-  // set up the frame parameters
-  goal.target_pose.header.frame_id = "map";
-  goal.target_pose.header.stamp = ros::Time::now();
-
-  // Define a list of positions and orientations for the robot to reach
-  float waypoints[4][3] = {{-4.25, 0.4, 3.14},
-                           {-1.75, -2.8, 0.0},
-                           {2.5, -5.5, 1.57},
-                           {1.25, 4.0, -1.57}};
-
-  int num_points = 4;
-
-  for (int i = 0; i < num_points; i++) {
-
-    goal.target_pose.pose.position.x = waypoints[i][0];
-    goal.target_pose.pose.position.y = waypoints[i][1];
-    goal.target_pose.pose.orientation =
-        tf::createQuaternionMsgFromYaw(waypoints[i][2]);
-
-    // Send the goal position and orientation for the robot to reach
-    ROS_INFO("Sending goal");
-    ac.sendGoal(goal);
-
-    // Wait an infinite time for the results
-    ac.waitForResult();
-
-    // Check if the robot reached its goal
-    if (ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
-      ROS_INFO("Goal reached!");
-    else
-      ROS_INFO("Failed to reach goal for some reason");
-    // Wait 1 second before moving to the next goal
-    ros::Duration(1.0).sleep();
-  }
-
-  return 0;
-}
-```
-
-Adjuk hozzá a fájlunkat a CMakeLists.txt-hez:
-```cmake
-add_executable(nav_goals src/nav_goals.cpp)
-target_link_libraries(nav_goals ${catkin_LIBRARIES})
-```
-
-### RViz visual markers
-
-Mielőtt még kipróbálnánk, készítsünk egy másik saját ROS node-ot is, `add_markers.cpp` névvel, ezt használjuk majd arra, hogy megjelenítse a célpontunkat az RViz-ben:
-
-```cpp
-#include "nav_msgs/Odometry.h"
-#include "ros/ros.h"
-#include "tf/tf.h"
-#include "visualization_msgs/Marker.h"
-#include <math.h>
-
-float odom_x = 0.0, odom_y = 0.0;
-
-// get the robot's pose to global variables
-void get_pose_cb(const nav_msgs::Odometry::ConstPtr &msg) {
-  ::odom_x = msg->pose.pose.position.x;
-  ::odom_y = msg->pose.pose.position.y;
-  // ROS_INFO("Robot's actual pose: %1.2f, %1.2f", ::odom_x, ::odom_y);
-}
-
-int main(int argc, char **argv) {
-  ros::init(argc, argv, "add_markers");
-  ros::NodeHandle n;
-  ros::Rate rate(20);
-  ros::Subscriber odom_sub = n.subscribe("/odom", 1, get_pose_cb);
-  ros::Publisher marker_pub =
-      n.advertise<visualization_msgs::Marker>("visualization_marker", 1);
-
-  // Set our initial shape type to be a cube
-  uint32_t shape = visualization_msgs::Marker::CUBE;
-
-  // Define the list of positions and orientations for marker
-  float waypoints[4][3] = {{-4.25, 0.4, 3.14},
-                           {-1.75, -2.8, 0.0},
-                           {2.5, -5.5, 1.57},
-                           {1.25, 4.0, -1.57}};
-
-  visualization_msgs::Marker marker;
-  // Set the frame ID and timestamp.  See the TF tutorials for information on
-  // these.
-  marker.header.frame_id = "map";
-  marker.header.stamp = ros::Time::now();
-
-  // Set the namespace and id for this marker.  This serves to create a unique
-  // ID Any marker sent with the same namespace and id will overwrite the old
-  // one
-  marker.ns = "add_markers";
-  marker.id = 0;
-
-  // Set the marker type.  Initially this is CUBE, and cycles between that and
-  // SPHERE, ARROW, and CYLINDER
-  marker.type = shape;
-
-  // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo: 3
-  // (DELETEALL)
-  marker.action = visualization_msgs::Marker::ADD;
-
-  // Set the pose of the marker.  This is a full 6DOF pose relative to the
-  // frame/time specified in the header
-  marker.pose.position.x = waypoints[0][0];
-  marker.pose.position.y = waypoints[0][1];
-  marker.pose.position.z = 0.5;
-  marker.pose.orientation = tf::createQuaternionMsgFromYaw(waypoints[0][2]);
-
-  // Set the scale of the marker -- 1x1x1 here means 1m on a side
-  marker.scale.x = 0.3;
-  marker.scale.y = 0.3;
-  marker.scale.z = 0.3;
-
-  // Set the color -- be sure to set alpha to something non-zero!
-  marker.color.r = 0.0f;
-  marker.color.g = 0.0f;
-  marker.color.b = 1.0f;
-  marker.color.a = 1.0;
-
-  marker.lifetime = ros::Duration();
-
-  float x_distance, y_distance;
-  float pickup_range = 0.4;
-  int i = 0;
-
-  while (ros::ok()) {
-    // Publish the marker
-    marker_pub.publish(marker);
-    x_distance = fabs(waypoints[i][0] - odom_x);
-    y_distance = fabs(waypoints[i][1] - odom_y);
-
-    // ROS_INFO("Distance to pick-up target: %1.2f", sqrt(pow(x_distance, 2) +
-    // pow(y_distance, 2)));
-    if (sqrt(pow(x_distance, 2) + pow(y_distance, 2)) < pickup_range) {
-      marker.action = visualization_msgs::Marker::DELETE;
-      marker_pub.publish(marker);
-      ROS_INFO("Marker reached!");
-
-      i++;
-
-      // Set the marker action.  Options are ADD, DELETE, and new in ROS Indigo:
-      // 3 (DELETEALL)
-      marker.action = visualization_msgs::Marker::ADD;
-
-      // Set the pose of the marker.  This is a full 6DOF pose relative to the
-      // frame/time specified in the header
-      marker.pose.position.x = waypoints[i][0];
-      marker.pose.position.y = waypoints[i][1];
-      marker.pose.position.z = 0.5;
-      marker.pose.orientation = tf::createQuaternionMsgFromYaw(waypoints[i][2]);
-    }
-
-    ros::spinOnce();
-    rate.sleep();
-  }
-  return 0;
-}
-```
-
-És természetesen ezt is adjuk hozzá a CMakeLists.txt-hez:
-```cmake
-add_executable(add_markers src/add_markers.cpp)
-target_link_libraries(add_markers ${catkin_LIBRARIES})
-```
-
-Ezután fordítsuk újra a catkin workspace-t, majd
-```console
-source devel/setup.bash
-```
-
-Készítsünk egy `manual_waypoints.launch` fájlt is, ami majd elndítja az új node-jainkat:
-```xml
-<?xml version="1.0"?>
-<launch>
-    <!-- Add RViz markers -->
-    <node name="add_markers" pkg="bme_ros_navigation" type="add_markers" respawn="false" output="screen">
-    </node>
-
-    <!-- Send navigation goals -->
-    <node name="nav_goals" pkg="bme_ros_navigation" type="nav_goals" respawn="false" output="screen">
-    </node>
-
-</launch>
-```
-
-És próbáljuk is ki az új node-jainkat. Ehhez 3 launchfájlt fogunk összesen elindítani:
-```console
-roslaunch bme_ros_navigation spawn_robot.launch
-```
-```console
-roslaunch bme_ros_navigation navigation.launch
-```
-```console
-roslaunch bme_ros_navigation manual_waypoints.launch
-```
-![alt text][image54]
+# Összefoglalás
