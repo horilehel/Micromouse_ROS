@@ -17,12 +17,10 @@
 2. [ROS Noetic telepítése (ha szükséges)](#ROS-Noetic-telepítése)  
 3. [Labirintus](#Labirintus)  
 4. [Robot felépítése](#Robot-felépítése)  
-4.1 [Robot modell](#Robot-modell)
+4.1 [Robot modell](#Robot-modell)   
 4.2 [Laser filter](#Laser-filter)
 5. [Labirintus feltérképező algoritmus](#Labirintus-feltérképező-algoritmus)  
-6. [Mapping](#Mapping)  
-6.1. [GMapping](#GMapping)  
-6.2. [Map saver](#Map-saver)
+6. [Mapping](#Mapping)
 7. [Lokalizáció](#Lokalizáció)  
 7.1. [AMCL](#AMCL)
 8. [Navigáció](#Navigáció)  
@@ -99,7 +97,7 @@ beni9708@DESKTOP-GSPKIBL:~/catkin_ws/src/Micromouse_ROS/bme_ros_micromouse$ tree
 
 # ROS Noetic telepítése
 
-Ahhoz, hogy a proejktünkben bemutatott funkciók biztosan működjenek, ROS Noeticre van szükség. Ha már fel van telepítve akkor ez a fejezet kihagyható, ha nincs, akkor pedig az alábbi parancsok futtatásával feltepíthető:
+Ahhoz, hogy a proejktünkben bemutatott funkciók biztosan működjenek, [ROS Noeticre](http://wiki.ros.org/noetic/Installation/Ubuntu) van szükség. Ha már fel van telepítve akkor ez a fejezet kihagyható, ha nincs, akkor pedig az alábbi parancsok futtatásával feltepíthető:
 ```console
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
@@ -159,167 +157,27 @@ A robotunk teste 10cm hosszú és a közepén helyezkedik a lidar szenzor. Gyors
 
 # Mapping
 
-Térképezésre általában SLAM (simultaneous localization and mapping) algoritmusokat használunk, amik képesek egyszerre létrehozni a környezet térképét és meghatározni a robot pozícióját és orientációját a térképen (lokalizáció).
-Az elmúlt években egyre inkább terjednek a mono, stereo vagy RGBD kamerát használó SLAM algoritmusok, de mi most két Lidart használó algoritmust próbálunk ki.
+Térképezésre az órán bemutatott SLAM (simultaneous localization and mapping) algoritmusok közül a GMappinget használtuk. Azért esett erre a választás, mert a lidar és az odometria jelek felhasználásával pontosan képes leképezni a robot általál bejárt területeket. Az elkészült térképet majd a Map server segítségével tujduk elmenteni.
 
-## GMapping
-
-A másik SLAM algoritmus, amit kipróbálunk a [GMapping](http://wiki.ros.org/gmapping). A GMapping nem csak a Lidar jeleit használja, hanem a robot odometriáját is, és nagyon sok paraméterrel rendelkezik.
-
-Ez sem része az alap ROS csomagnak, telepítenünk kell:
+A [GMapping](http://wiki.ros.org/gmapping) és [Map server](http://wiki.ros.org/map_server) nem része az alap ROS csomagnak, ezért telepítenünk kell őket:
 ```console
-sudo apt install ros-$(rosversion -d)-gmapping 
+sudo apt install ros-noetic-gmapping
+sudo apt install ros-noetic-map-server
 ```
 
-Hozzuk létre a `gmapping.launch` fájlt:
-```xml
-<?xml version="1.0"?>
-<launch>
-
-  <!-- Ground truth map file -->
-  <arg name="map_file" default="$(find bme_ros_navigation)/maps/map.yaml"/>
-
-  <node pkg="gmapping" type="slam_gmapping" name="gmapping" output="screen" >
-    <param name="odom_frame" value="odom" />
-    <param name="base_frame" value="base_link" />
-    <!-- Process 1 out of every this many scans (set it to a higher number to skip more scans)  -->
-    <param name="throttle_scans" value="1"/>
-    <param name="map_update_interval" value="3.0"/> <!-- default: 5.0 -->
-
-    <!-- The maximum usable range of the laser. A beam is cropped to this value.  -->
-    <param name="maxUrange" value="5.0"/>
-    <!-- The maximum range of the sensor. If regions with no obstacles within the range of the sensor should appear as free space in the map, set maxUrange < maximum range of the real sensor <= maxRange -->
-    <param name="maxRange" value="5.0"/>
-
-    <param name="sigma" value="0.05"/>
-    <param name="kernelSize" value="1"/>
-    <param name="lstep" value="0.05"/>
-    <param name="astep" value="0.05"/>
-    <param name="iterations" value="5"/>
-    <param name="lsigma" value="0.075"/>
-    <param name="ogain" value="3.0"/>
-    <param name="minimumScore" value="30.0"/>
-    <!-- Number of beams to skip in each scan. -->
-    <param name="lskip" value="0"/>
-    <param name="srr" value="0.01"/>
-    <param name="srt" value="0.02"/>
-    <param name="str" value="0.01"/>
-    <param name="stt" value="0.02"/>
-
-    <!-- Process a scan each time the robot translates this far  -->
-    <param name="linearUpdate" value="0.1"/>
-
-    <!-- Process a scan each time the robot rotates this far  -->
-    <param name="angularUpdate" value="0.1"/>
-    <param name="temporalUpdate" value="1.0"/>
-    <param name="resampleThreshold" value="0.5"/>
-
-    <!-- Number of particles in the filter. default 30        -->
-    <param name="particles" value="30"/>
-
-    <!-- Initial map size  -->
-    <param name="xmin" value="-10.0"/>
-    <param name="ymin" value="-10.0"/>
-    <param name="xmax" value="10.0"/>
-    <param name="ymax" value="10.0"/>
-
-    <!-- Processing parameters (resolution of the map)  -->
-    <param name="delta" value="0.025"/>
-    <param name="llsamplerange" value="0.01"/>
-    <param name="llsamplestep" value="0.01"/>
-    <param name="lasamplerange" value="0.005"/>
-    <param name="lasamplestep" value="0.005"/>
-  </node> 
-
-  <!-- Ground truth map Server -->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
-    <remap from="map" to="map_groundtruth"/>
-  </node>
-
-</launch>
-```
-
-Majd indítsuk el a szimulációt az alap világon.
-```console
-roslaunch bme_ros_navigation spawn_robot.launch
-```
-
-Indítsuk el a gmapping-et, és a távirányítót is:
-```console
-roslaunch bme_ros_navigation gmapping.launch
-```
+Ezután az alábbi parancsokkal futtatva betöltjük a környezetet, elindítjuk a térképezést a labirintus felderítő algoritmust.
 
 ```console
-roslaunch bme_ros_navigation teleop.launch
+roslaunch bme_ros_micromouse spawn_robot.launch
+roslaunch bme_ros_micromouse gmapping.launch
+rosrun bme_ros_micromouse map_labyrinth.py
 ```
 
-És nézzük meg az `rqt_graph`-ot:
-![alt text][image11]
-
-![alt text][image21]
-
-Az előbbihez hasonlóan vezessük végig a robotunkat a szobán:
-![alt text][image20]
-
-### Üres folyosó
-
-Próbáljuk ki a GMappinget az üres folyosón:
-```console
-roslaunch bme_ros_navigation spawn_robot.launch world:='$(find bme_ros_navigation)/worlds/20m_corridor_empty.world' x:=-7 y:=2
-```
+Miután a robot elérte a kijelölt pontokat és kész a térkép, a `map_server` csomag `map_saver` node-jával elmenthetjük. A `map_saver` node oda menti a térképet, amelyik mappából indítjuk. Esetünkben az alábbi kód használható:
 
 ```console
-roslaunch bme_ros_navigation gmapping.launch map_file:='$(find bme_ros_navigation)/maps/corridor.yaml'
-```
-
-```console
-roslaunch bme_ros_navigation teleop.launch
-```
-
-![alt text][image22]
-
-A GMapping az odometria használata miatt egész kis hibát szedett össze az üres folyosón, de ez sem volt képes teljesen pontosan felmérni a folyosó hosszát.
-![alt text][image23]
-
-### Folyosó tárgyakkal
-Nézzük meg a GMappinget is tárgyakkal:
-```console
-roslaunch bme_ros_navigation spawn_robot.launch world:='$(find bme_ros_navigation)/worlds/20m_corridor_features.world' x:=-7 y:=2
-```
-
-```console
-roslaunch bme_ros_navigation gmapping.launch map_file:='$(find bme_ros_navigation)/maps/corridor.yaml'
-```
-
-```console
-roslaunch bme_ros_navigation teleop.launch
-```
-![alt text][image24]
-
-
-## Map saver
-
-Ha szeretnénk elmenteni a SLAM algoritmus által létrehozott térképet, akkor a `map_server` csomag `map_saver` node-ját tudjuk erre a célra használni. A `map_server`-rel találkoztunk már korábban is, ez adta a ground truth térképünket.
-
-A `map_saver` abba a mappába menti a térképet, ahonnan indítjuk!
-Használjuk most erre a `saved_maps` mappát a maps-en belül, de a kezdőcsomag már alapból tartalmazza ezeket a térképeket!
-
-```console
+cd ~/catkin_ws/src/Micromouse_ROS/bme_ros_micromouse/maps/saved_maps
 rosrun map_server map_saver -f map
-```
-
-Példa:
-
-```console
-david@DavidsLenovoX1:~/bme_catkin_ws/src/Week-7-8-Navigation/bme_ros_navigation/maps/saved_maps$ rosrun map_server map_saver -f map
-[ INFO] [1614518022.653341900]: Waiting for the map
-[ INFO] [1614518022.875830700, 563.990000000]: Received a 800 X 800 map @ 0.025 m/pix
-[ INFO] [1614518022.875936200, 563.990000000]: Writing map occupancy data to map.pgm
-[ INFO] [1614518022.933453800, 564.011000000]: Writing map occupancy data to map.yaml
-[ INFO] [1614518022.933801100, 564.011000000]: Done
-
-david@DavidsLenovoX1:~/bme_catkin_ws/src/Week-7-8-Navigation/bme_ros_navigation/maps/saved_maps$ ls
-map.pgm  map.yaml
 ```
 
 # Lokalizáció
@@ -459,6 +317,7 @@ Az AMCL-nek adhatunk egy kezdeti pozíciót is az RViz segítségével:
 ![alt text][image36]
 Fontos megjegyezni, hogy ezt csak a `map` frame-ben tehetjük meg, az `odom`-ban nem!
 ![alt text][image37]
+
 # Navigáció
 
 A [ROS nyílt forrású navigációs stackje](http://wiki.ros.org/navigation) hatalmas, úgyhogy az implementációjának részleteibe nem megyünk bele, a legfontosabb tulajdonságait nézzük meg.
