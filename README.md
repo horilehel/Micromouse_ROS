@@ -1,59 +1,10 @@
 [//]: # (Image References)
 
-[image1]: ./assets/gazebo_world.png "Gazebo"
-[image2]: ./assets/gazebo_corridor_empty.png "Gazebo"
-[image3]: ./assets/gazebo_corridor_features.png "Gazebo"
-[image4]: ./assets/gazebo_corridor_robot_1.png "Gazebo"
-[image5]: ./assets/gazebo_corridor_robot_2.png "Gazebo"
-[image6]: ./assets/tf_tree.png "TF"
-[image7]: ./assets/graph_1.png "Graph"
-[image8]: ./assets/roswtf.png "roswtf"
-[image9]: ./assets/map_1.png "map"
-[image10]: ./assets/map_2.png "map"
-[image11]: ./assets/graph_2.png "Graph"
-[image12]: ./assets/graph_3.png "Graph"
-[image13]: ./assets/graph_4.png "Graph"
-[image14]: ./assets/hector_slam_1.png "Hector SLAM"
-[image15]: ./assets/hector_slam_2.png "Hector SLAM"
-[image16]: ./assets/hector_corridor_empty_1.png "Hector SLAM"
-[image17]: ./assets/hector_corridor_empty_2.png "Hector SLAM"
-[image18]: ./assets/hector_corridor_empty_3.png "Hector SLAM"
-[image19]: ./assets/hector_corridor_features_1.png "Hector SLAM"
-[image20]: ./assets/gmapping_room_1.png "Gmapping"
-[image21]: ./assets/gmapping_room_2.png "Gmapping"
-[image22]: ./assets/gmapping_corridor_empty_1.png "Gmapping"
-[image23]: ./assets/gmapping_corridor_empty_2.png "Gmapping"
-[image24]: ./assets/gmapping_corridor_features_1.png "Gmapping"
-[image25]: ./assets/amcl_frames.png "AMCL"
-[image26]: ./assets/amcl_1.png "AMCL"
-[image27]: ./assets/amcl_2.png "AMCL"
-[image28]: ./assets/amcl_3.png "AMCL"
-[image29]: ./assets/amcl_corridor_1.png "AMCL"
-[image30]: ./assets/amcl_corridor_2.png "AMCL"
-[image31]: ./assets/amcl_corridor_3.png "AMCL"
-[image32]: ./assets/amcl_corridor_4.png "AMCL"
-[image33]: ./assets/amcl_corridor_5.png "AMCL"
-[image34]: ./assets/interactive_marker.png "Interactive marker"
-[image35]: ./assets/overview_tf.png "move_base"
-[image36]: ./assets/amcl_init_1.png "AMCL"
-[image37]: ./assets/amcl_init_2.png "AMCL"
-[image38]: ./assets/navigation_1.png "navigation"
-[image39]: ./assets/navigation_2.png "navigation"
-[image40]: ./assets/navigation_3.png "navigation"
-[image41]: ./assets/navigation_4.png "navigation"
-[image42]: ./assets/navigation_5.png "navigation"
-[image43]: ./assets/navigation_6.png "navigation"
-[image44]: ./assets/navigation_7.png "navigation"
-[image45]: ./assets/navigation_corridor_1.png "navigation"
-[image46]: ./assets/navigation_corridor_2.png "navigation"
-[image47]: ./assets/navigation_corridor_3.png "navigation"
-[image48]: ./assets/navigation_corridor_4.png "navigation"
-[image49]: ./assets/waypoint_1.png "waypoint"
-[image50]: ./assets/waypoint_2.png "waypoint"
-[image51]: ./assets/waypoint_3.png "waypoint"
-[image52]: ./assets/waypoint_4.png "waypoint"
-[image53]: ./assets/waypoint_5.png "waypoint"
-[image54]: ./assets/waypoint_6.png "waypoint"
+[image1]: ./assets/robot_body.png "Robot modell"
+[image2]: ./assets/robot_wheel.png "Robot modell"
+[image3]: ./assets/lidar.png "Robot modell"
+[image4]: ./assets/robot_rviz.png "Robot modell"
+[image5]: ./assets/robot_gazebo.png "Robot modell"
 
 # Micrimouse ROS
 
@@ -65,7 +16,9 @@
 1. [Projekt bemutása](#Projekt-bemutatása)
 2. [ROS Noetic telepítése (ha szükséges)](#ROS-Noetic-telepítése)  
 3. [Labirintus](#Labirintus)  
-4. [Robot](#Robot)
+4. [Robot felépítése](#Robot-felépítése)  
+4.1 [Robot modell](#Robot-modell)
+4.2 [Laser filter](#Laser-filter)
 5. [Labirintus feltérképező algoritmus](#Labirintus-feltérképező-algoritmus)  
 6. [Mapping](#Mapping)  
 6.1. [GMapping](#GMapping)  
@@ -166,112 +119,31 @@ A `.bashrc` fájlt ismét kiegészíthetjük, most a `source ~/catkin_ws/devel/s
 
 # Labirintus
 
-A fejezet során a már jól megismert `world_modified.world` Gazebo világot fogjuk használni, amit a következő paranccsal bármikor ki tudunk próbálni:
-```console
-roslaunch bme_ros_navigation world.launch
-```
+# Robot felépítése
+A robot tervezése során szempont volt, hogy hasonlítson a Micromouse során használt robotokhoz. Egy testből, a hozzá középen csatalkoztatott két kerékből, valamint a tetején elhejezkedő lidar szenzorból épül fel. Mozgatásához differenciál hajtást használtunk. Ezen kívül hozzáadtunk egy laser filtert, hogy a navigáció során kiszűrhessük a túlságosan kis távlságra lévő jeleket, amik jellemzően a gyorsítás és fékezés során a robot dőléséből adódtak.
+
+# Robot modell
+A 3D modelleket Blenderben készítettük el (kivéve a lidart, aminek a modelljét a Week-3-4-Gazebo-basics csomagból kölcsönöztük).
+
 ![alt text][image1]
 
-Emellett azonban szükségünk lesz egy másik világra is, ami egy 20m hosszú folyosóból áll, ezen fogjuk tesztelni a térképezési algoritmusokat. Ennek két verzióját hoztam létre előre, egy ürest és egy olyat, ahol vannak objektumok a folyosón. Ezeket is ki tudjuk próbálni:
-```console
-roslaunch bme_ros_navigation world.launch world_file:='$(find bme_ros_navigation)/worlds/20m_corridor_empty.world'
-```
 ![alt text][image2]
-```console
-roslaunch bme_ros_navigation world.launch world_file:='$(find bme_ros_navigation)/worlds/20m_corridor_features.world'
-```
+
 ![alt text][image3]
 
-A robotunkat is betölthetjük a világba, a korábbiakhoz hasonlóan a `spawn_robot.launch` segítségével. Robot betöltése az alap világba:
-```console
-roslaunch bme_ros_navigation spawn_robot.launch
-```
-És a világ megadásával betölthetjük a folyosóra is:
-```console
-roslaunch bme_ros_navigation spawn_robot.launch world:='$(find bme_ros_navigation)/worlds/20m_corridor_empty.world' x:=-7 y:=2
-```
+A robot alvázát, kerekeit, a szenzorokat és ezeknek a megjelenítését és tuladjonságait a `umouse_robot.xacro` fájlban tudjuk megadni. Itt tudjuk azt is beállítani, hogy a testek megjelenítésekor a Blenderben készült modelleket láthassuk.
+
 ![alt text][image4]
-Vegyük észre, hogy felülbíráljuk a robot kezdeti pozícióját is ezzel a paranccsal, nézzük meg mi történik nélküle.
+
 ![alt text][image5]
 
-A robot ilyekor sem a (0,0) pozícióban indul, mert a `spawn_robot.launch` fájlban ezek az alapértelmezett értékek:
-```xml
-...
-  <arg name="x" default="2.5"/>
-  <arg name="y" default="1.5"/>
-  <arg name="z" default="0"/>
-  <arg name="roll" default="0"/>
-  <arg name="pitch" default="0"/>
-  <arg name="yaw" default="0"/>
-...
-```
+Ahhoz, hogy használhassuk a modellünket a szimulációs környezetben, be kell még kötni a gazeboba a differenciálhajtáshoz és a lidarhoz szükséges pluginokat a `umouse_robot.gazebo`.
 
-Ennek megfelelően a másik folyosómodellre is elhelyezhető a robot:
-```console
-roslaunch bme_ros_navigation spawn_robot.launch world:='$(find bme_ros_navigation)/worlds/20m_corridor_features.world' x:=-7 y:=2
-```
 
-Próbáljuk ki a távirányítót is, mert kiegészítjük egy új hasznos funkcióval ebben a fejezetben, és ez az `Interactive marker twist server` csomag használata, amit így tudtok telepíteni:
-```console
-sudo apt install ros-$(rosversion -d)-interactive-marker-twist-server
-```
-![alt text][image34]
 
-# Robot
-
-Lehetőségünk van a Gezbo világunkból egy úgy nevezett ground truth térképet készíteni. Ehhez a `pgm_map_creator` csomagot használhatjuk.
-Ez nem egy hivatalos ROS csomag, így letölthető a tárgy GitHub oldaláról a catkin workspace-etekbe:
-```console
-git clone https://github.com/MOGI-ROS/pgm_map_creator
-```
-A csomag használatához be kell tennünk egy plugint a Gazebo világunkba, ezért csináljunk róla egy másolatot `world_map_creation.world` néven a `worlds/map_creation` mappába.
-
-Tegyük be a plugint a fájl végére a `</world>` tag elé:
-
-```xml
-...
-    <plugin filename="libcollision_map_creator.so" name="collision_map_creator"/>
-  </world>
-</sdf>
-```
-
-A plugin használatához indítsuk el a világunk szimulációját, ehhez nincs szükség a grafikus frontendre, így elég a gzserver-t használnunk.
-
-```console
-gzserver src/Week-7-8-Navigation/bme_ros_navigation/worlds/world_map_creation.world
-```
-
-És egy másik terminálból indítsuk el a map creator-t:
-```console
-roslaunch pgm_map_creator request_publisher.launch
-```
-
-A `request_publisher` launch fájlban tudjuk megadni a térképünk méretét és felbontását.
-```xml
-<?xml version="1.0" ?>
-<launch>
-  <arg name="map_name" default="map" />
-  <arg name="save_folder" default="$(find pgm_map_creator)/maps" />
-  <arg name="xmin" default="-15" />
-  <arg name="xmax" default="15" />
-  <arg name="ymin" default="-15" />
-  <arg name="ymax" default="15" />
-  <arg name="scan_height" default="5" />
-  <arg name="resolution" default="0.05" />
-
-  <node pkg="pgm_map_creator" type="request_publisher" name="request_publisher" output="screen" args="'($(arg xmin),$(arg ymax))($(arg xmax),$(arg ymax))($(arg xmax),$(arg ymin))($(arg xmin),$(arg ymin))' $(arg scan_height) $(arg resolution) $(arg save_folder)/$(arg map_name)">
-  </node>
-</launch>
-```
-
-Előre elkészítettem a grund truth térképet a `world_modified.world` és a `20m_corridor_empty.world` alapján, így ezeket használhatjuk a kezdőcsomagból.  
-![alt text][image9]
-![alt text][image10]
-
-A `pgm_map_creator` alapértelmezetten a saját csomagjának a maps mappájába menti a térkép fájlokat. A `.pgm` fájlok egyszerű bitmap-ek, többek között megnyithatók a GIMP vagy Inkscape szoftverekkel.
+# Laser filter
 
 # Labirintus feltérképező algoritmus
-Vessünk még egy pillantást a `spawn_robot.launch` fájlra! Ebben ugyanis van pár változás a korábbiakhoz képest. Bekerült egy új node:
 ```xml
   <!-- Robot pose EKF for sensor fusion -->
   <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
@@ -288,17 +160,6 @@ Vessünk még egy pillantást a `spawn_robot.launch` fájlra! Ebben ugyanis van 
     <param name="self_diagnose" value="false"/>
   </node>
 ```
-És ezzel együtt változott egy picit a `mogi_bot.gazebo` fájl is:
-```xml
-<publishOdomTF>false</publishOdomTF>
-```
-
-Mostantól nem a Gazebo plugin csinálja a transzformációt az odom fix frame és a robot alváza között, hanem az EKF szenzorfúzió. Ez a felállás sokkal jobban hasonlít egy valódi robotra, ahol a szenzor adatok (IMU és Odoemtria) megadott topicokba kerülnek, majd ezek alapján a szenzorfúzió hozza létre a transzformációt.
-Nézzük is meg a TF tree-t, ami a `rosrun rqt_tf_tree rqt_tf_tree` paranccsal tudok elindítani.
-![alt text][image6]
-
-Valamint a node-jaink összekötését is vizsgáljuk meg az `rqt_graph` paranccsal:
-![alt text][image7]
 
 # Mapping
 

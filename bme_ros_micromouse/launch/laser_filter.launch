@@ -2,6 +2,5 @@
   <node pkg="laser_filters" type="scan_to_scan_filter_chain"
       name="laser_filter">
     <rosparam command="load" file="$(find bme_ros_micromouse)/config/my_laser_config.yaml" />
-    <!--remap from="scan" to="base_scan" /-->
   </node>
 </launch>
