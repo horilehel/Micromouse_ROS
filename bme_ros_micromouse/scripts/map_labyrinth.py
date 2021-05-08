@@ -34,18 +34,6 @@ def check_orient(threshold = 0.015):
     # left
     elif (3.14156 - threshold < yaw and yaw < 3.14156) or (-3.14156 < yaw and yaw < -3.14156 + threshold):
         orient = 3
-    ## up and right
-    #if 0.78 - threshold < yaw and yaw < 0.78 + threshold:
-    #    orient = 4
-    ## down and right
-    #elif -0.78 - threshold < yaw and yaw < -0.78 + threshold:
-    #    orient = 5
-    ## down and left
-    #elif -2.35 - threshold < yaw and yaw < -2.35 + threshold:
-    #    orient = 6
-    ## up and left
-    #elif 2.35 - threshold < yaw and yaw < 2.35 + threshold:
-    #    orient = 7
     else:
         orient = -1
 
