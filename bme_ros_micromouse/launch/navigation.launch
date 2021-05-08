@@ -2,7 +2,7 @@
 <launch>
 
   <!-- Map file for localization -->
-  <arg name="map_file" default="$(find bme_ros_micromouse)/maps/saved_maps/map.yaml"/>
+  <arg name="map_file" default="$(find bme_ros_micromouse)/maps/saved_maps/30cm/map.yaml"/>
 
   <!-- Launch our Gazebo world -->
   <include file="$(find bme_ros_micromouse)/launch/amcl.launch">

@@ -5,6 +5,8 @@
 [image3]: ./assets/lidar.png "Robot modell"
 [image4]: ./assets/robot_rviz.png "Robot modell"
 [image5]: ./assets/robot_gazebo.png "Robot modell"
+[image6]: ./assets/gmapping_in_progress.png "GMapping"
+[image7]: ./assets/gmapping_finished.png "GMapping"
 
 # Micrimouse ROS
 
@@ -173,10 +175,16 @@ roslaunch bme_ros_micromouse gmapping.launch
 rosrun bme_ros_micromouse map_labyrinth.py
 ```
 
+Az alábbi képen a labirintus bejárása látható. A piros vonalak a lidar által látott falak, a szürke terület pedig a GMapping által már feltérképezett területet jelöli.
+
+![alt text][image6]
+
+![alt text][image7]
+
 Miután a robot elérte a kijelölt pontokat és kész a térkép, a `map_server` csomag `map_saver` node-jával elmenthetjük. A `map_saver` node oda menti a térképet, amelyik mappából indítjuk. Esetünkben az alábbi kód használható:
 
 ```console
-cd ~/catkin_ws/src/Micromouse_ROS/bme_ros_micromouse/maps/saved_maps
+cd ~/catkin_ws/src/Micromouse_ROS/bme_ros_micromouse/maps/saved_maps/30cm
 rosrun map_server map_saver -f map
 ```
 
