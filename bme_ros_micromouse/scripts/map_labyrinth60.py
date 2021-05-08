@@ -20,19 +20,19 @@ def get_odometry_data(msg):
     print(y)
     check_orient()
 
-def check_orient(threshold = 0.02):
+def check_orient(threshold = 0.015):
     global orient
     # up
-    if 1.57 - threshold < yaw and yaw < 1.57 + threshold:
+    if 1.57078 - threshold < yaw and yaw < 1.57078 + threshold:
         orient = 0
     # right
     elif 0 - threshold < yaw and yaw < 0 + threshold:
         orient = 1
     # down
-    elif -1.57 - threshold < yaw and yaw < -1.57 + threshold:
+    elif -1.57078 - threshold < yaw and yaw < -1.57078 + threshold:
         orient = 2
     # left
-    elif (3.14 - threshold < yaw and yaw < 3.14156) or (-3.14156 < yaw and yaw < -3.14 + threshold):
+    elif (3.14156 - threshold < yaw and yaw < 3.14156) or (-3.14156 < yaw and yaw < -3.14156 + threshold):
         orient = 3
     ## up and right
     #if 0.78 - threshold < yaw and yaw < 0.78 + threshold:
