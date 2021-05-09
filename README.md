@@ -7,6 +7,8 @@
 [image5]: ./assets/robot_gazebo.png "Robot modell"
 [image6]: ./assets/gmapping_in_progress.png "GMapping"
 [image7]: ./assets/gmapping_finished.png "GMapping"
+[image8]: ./assets/amcl_0.png "AMCL"
+[image9]: ./assets/amcl_1.png "AMCL"
 
 # Micrimouse ROS
 
@@ -190,125 +192,13 @@ rosrun map_server map_saver -f map
 
 # Lokalizáció
 
-Lokalizáció esetén a robotunk pontos pozícióját és orientációját határoztuk meg egy ismert térképen. Ehhez a ROS [AMCL (Advanced Monte Carlo Localization) csomagját](http://wiki.ros.org/amcl) fogjuk használni. Ez a lokalizációs módszer egy úgynevezett particle filter algoritmus, ami induláskor véletlenszerűen "szór szét" particle-öket a téképen, és a lidar szenzoradataiból próbálja kiszűrni azokat a lehetséges particle-öket, amikkel konzisztensek a szenzoradataink. Ahogy mozgunk a robottal a lehetséges particle-ök a robot valós helyéhez konvergálnak.
+Lokalizációra az órán bemutatott ROS [AMCL (Advanced Monte Carlo Localization) csomagját](http://wiki.ros.org/amcl) használtuk egy ismert térképen. A GMapping által készített térképet használtuk fel, mert a robot saját szenzorai által készített térképen sokkal pontosabban tudja megtalálni a valódi pozícióját.
 
-## AMCL
-
-Az AMCL sem része az alap ROS telepítésnek, így tegyük fel ezt a csomagot:
+Az AMCL az alábbi paranncsal telepíthető:
 ```console
-sudo apt install ros-$(rosversion -d)-amcl
+sudo apt install ros-noetic-amcl
 ```
-
-Majd hozzuk létre az `amcl.launch` fájlt. Ebben az esetben nem lesz szükségünk a ground truth térképre, és vegyük észre, hogy alapértelmezetten a korábbi térképezés által rögzített térképet töltjük be a `map_server`-nek.
-
-```xml
-<?xml version="1.0"?>
-<launch>
-
-  <!-- Map file for localization -->
-  <arg name="map_file" default="$(find bme_ros_navigation)/maps/saved_maps/map.yaml"/>
-  <!-- It can be an environmental variable, too -->
-  <!--arg name="map_file" default="$(env AMCL_MAP_FILE)"/-->
-
-  <!-- Map Server -->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)">
-  </node>
-
-  <!-- AMCL Node -->
-  <arg name="initial_pose_x"  default="0.0"/>
-  <arg name="initial_pose_y"  default="0.0"/>
-  <arg name="initial_pose_a"  default="1.57"/>
-  <node name="amcl" pkg="amcl" type="amcl" output="screen">
-    <param name="odom_frame_id" value="odom"/>
-    <param name="odom_model_type" value="diff-corrected"/>
-    <param name="base_frame_id" value="base_link"/>
-    <param name="global_frame_id" value="map"/>
-    <param name="scan_topic" value="scan"/>
-    <!-- If you choose to define initial pose here -->
-    <param name="initial_pose_x" value="$(arg initial_pose_x)"/>
-    <param name="initial_pose_y" value="$(arg initial_pose_y)"/>
-    <param name="initial_pose_a" value="$(arg initial_pose_a)"/>
-    <!-- Parameters for inital particle distribution -->
-    <param name="initial_cov_xx" value="9.0"/>
-    <param name="initial_cov_yy" value="9.0"/>
-    <param name="initial_cov_aa" value="9.8"/>
-    <!-- Dynamically adjusts particles for every iteration -->
-    <param name="min_particles" value="500"/>
-    <param name="max_particles" value="2000"/>
-    <!-- Perform update parameters -->
-    <param name="update_min_d" value="0.1"/>
-    <param name="update_min_a" value="0.1"/>
-    <param name="laser_model_type" value="likelihood_field"/>
-    <param name="laser_max_range" value="-1.0"/>
-    <param name="odom_alpha1" value="0.1"/>
-    <param name="odom_alpha2" value="0.1"/>
-    <param name="odom_alpha3" value="0.3"/>
-    <param name="odom_alpha4" value="0.1"/>
-    <param name="odom_alpha5" value="0.1"/>
-    <!-- Transform tolerance needed on slower machines -->
-    <param name="transform_tolerance" value="1.0"/>
-  </node>
-
-</launch>
-```
-
-Indítsuk el a szimulációt:
-
-```console
-roslaunch bme_ros_navigation spawn_robot.launch
-```
-
-Indítsuk el az AMCL-t is, azonban ne az alapértelmezett mentett térképpel, hanem először a ground truth térképpel:
-```console
-roslaunch bme_ros_navigation amcl.launch map_file:='$(find bme_ros_navigation)/maps/map.yaml'
-```
-
-Indítsunk egy távirányítót is, viszont mielőtt nekiállnánk vezetni, nézzünk rá az rqt_graph-ra és a TF tree-re!
-
-```console
-roslaunch bme_ros_navigation teleop.launch
-```
-
-![alt text][image13]
-![alt text][image25]
-
-Próbáljuk ki a lokalizációt, mozogjunk a robotunkkal:
-
-Azt tapasztaljuk, hogy az ennyire tökéletes térkép nehézséget okoz az AMCL-nek, érdemes olyan térképpel használnunk a lokalizációt, ami azzal a szenzorral készült, amit a lokalizációs is használ!
-
-Most indítsuk e a mentett térképpel, és nézzük meg mi történik:
-```console
-roslaunch bme_ros_navigation amcl.launch
-```
-
-![alt text][image26]
-![alt text][image27]
-![alt text][image28]
-
-Próbáljuk ki a lokalizációt a folyosón is:
-```console
-roslaunch bme_ros_navigation spawn_robot.launch world:='$(find bme_ros_navigation)/worlds/20m_corridor_features.world' x:=-7 y:=2
-```
-
-```console
-roslaunch bme_ros_navigation amcl.launch map_file:='$(find bme_ros_navigation)/maps/saved_maps/corridor.yaml'
-```
-Induláskor az AMCL-nek fogalma sincs, hogy hol a robot, ahogy ezt korábban is láttuk:
-![alt text][image29]
-
-Mivel ezen a térképen nagyon kevés jól felismerhető feature van, elképzelhető, hogy az AMCL tévesen lokalizálja a robotot:
-![alt text][image30]
-
-Ha vezetjük tovább a robotot, a particle-ök elkezdenek divergálni a robot pozíciójától:
-![alt text][image31]
-
-Ez addig fokozódik, amíg új particle-ök jelennek meg:
-![alt text][image32]
-
-És egy idő után képes sikeresen lokalizálni a robotunkat:
-![alt text][image33]
-
-Téves konvergálást úgy tudunk a legjobban elkerülni, ha van valamennyi elképzelésünk a robotunk kezdeti pozíciójáról és orientációjáról. Ezeket a launch fájlban megadhatjuk, és csökkenthetjük a kezdeti részecskék eloszlását, erről [bővebben az AMCL wiki oldalán olvashattok](http://wiki.ros.org/amcl#Parameters):
+Ahhoz, hogy az AMCL a megfelelő helyre konvergáljon megadtuk, hogy nagyjából mi a robot kezdeti pozíciója és orientációja.
 
 ```xml
     <!-- If you choose to define initial pose here -->
@@ -316,15 +206,16 @@ Téves konvergálást úgy tudunk a legjobban elkerülni, ha van valamennyi elk�
     <param name="initial_pose_y" value="$(arg initial_pose_y)"/>
     <param name="initial_pose_a" value="$(arg initial_pose_a)"/>
     <!-- Parameters for inital particle distribution -->
-    <param name="initial_cov_xx" value="9.0"/>
-    <param name="initial_cov_yy" value="9.0"/>
-    <param name="initial_cov_aa" value="9.8"/>
+    <param name="initial_cov_xx" value="0.01"/>
+    <param name="initial_cov_yy" value="0.01"/>
+    <param name="initial_cov_aa" value="0.01"/>
 ```
 
-Az AMCL-nek adhatunk egy kezdeti pozíciót is az RViz segítségével:
-![alt text][image36]
-Fontos megjegyezni, hogy ezt csak a `map` frame-ben tehetjük meg, az `odom`-ban nem!
-![alt text][image37]
+Az alábbi képeken jól látható, hogy a kezdetben a kiindulási pont körül szétszórt particle-ök a haladás során a megfelelő pontba konvergálnak.
+
+![alt text][image8]
+
+![alt text][image9]
 
 # Navigáció
 

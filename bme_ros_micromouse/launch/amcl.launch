@@ -25,11 +25,11 @@
     <param name="initial_pose_y" value="$(arg initial_pose_y)"/>
     <param name="initial_pose_a" value="$(arg initial_pose_a)"/>
     <!-- Parameters for inital particle distribution -->
-    <param name="initial_cov_xx" value="0.0"/>
-    <param name="initial_cov_yy" value="0.0"/>
-    <param name="initial_cov_aa" value="0.0"/>
+    <param name="initial_cov_xx" value="0.01"/>
+    <param name="initial_cov_yy" value="0.01"/>
+    <param name="initial_cov_aa" value="0.01"/>
     <!-- Dynamically adjusts particles for every iteration -->
-    <param name="min_particles" value="500"/>
+    <param name="min_particles" value="50"/>
     <param name="max_particles" value="2000"/>
     <!-- Perform update parameters -->
     <param name="update_min_d" value="0.01"/>

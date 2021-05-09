@@ -3,7 +3,7 @@
 <launch>
 
   <!-- World File -->
-  <arg name="world_file" default="$(find bme_ros_micromouse)/worlds/labyrinth_60cm.world"/>
+  <arg name="world_file" default="$(find bme_ros_micromouse)/worlds/labyrinth_30cm.world"/>
 
   <!-- Launch Gazebo World -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
