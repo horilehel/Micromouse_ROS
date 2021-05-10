@@ -164,6 +164,8 @@ A robotunk teste 10cm hosszú és a közepén helyezkedik a lidar szenzor. Gyors
 
 # Labirintus feltérképező algoritmus
 
+Ahhoz, hogy a feltérképezetlen labirintusban hatékonyan mozgatni tudjuk a robotunkat falba ütközés nélkül, egy saját node-ot írtunk python-ban. Ebben a [Floodfill](https://medium.com/@minikiraniamayadharmasiri/micromouse-from-scratch-algorithm-maze-traversal-shortest-path-floodfill-741242e8510) algoritmust implementáltuk és igazítottuk hozzá a ROS-os környezethez. A futtatásához szükség van a labirintus méretére (blokkokban mérve) illetve a robot kezdő pozíciójára, majd a LIDAR adatok felhasználásával tetszőleges pontba tudjuk küldeni a robotot, amelyet ráadásul igyekszik minél rövidebb úton megközelíteni. Kellően sok pontot megadva az egész labirintus feltérképezhető. A mozgás során az algoritmus egy saját sematikus térképet is készít, amelyet kimentve és betöltve a következő futtatáskor már a legrövidebb úton lehetne navigálni a robotot. Ez azonban csak egyenes mozgást és 90°-os kanyarodást enged meg, ezért a node futtatása mellett más térképező algoritmust is kellett használnunk, amely olyan térképet készít, amit sokkal rugalmasab navigálásra is fel lehet használni.
+
 # Mapping
 
 Térképezésre az órán bemutatott SLAM (simultaneous localization and mapping) algoritmusok közül a GMappinget használtuk. Azért esett erre a választás, mert a lidar és az odometria jelek felhasználásával pontosan képes leképezni a robot általál bejárt területeket. Az elkészült térképet majd a Map server segítségével tujduk elmenteni.
