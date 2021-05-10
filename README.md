@@ -32,7 +32,7 @@
 7. [Lokalizáció](#Lokalizáció)  
 7.1. [AMCL](#AMCL)
 8. [Navigáció](#Navigáció)  
-8.1. [Lokális útvonaltervezők](#Lokális-útvonaltervezők)  
+8.1. [Navigáció tesztelése](#Navigáció-tesztelése)  
 8.2. [Paratméterek módosítása RVizben](#Paratméterek-módosítása-RVizben)  
 9. [Összefoglalás](#Összefoglalás)
 
@@ -231,7 +231,26 @@ A [ROS nyílt forrású navigációs stackje](http://wiki.ros.org/navigation) sz
 a) Az első a [DWAPlannerROS](http://wiki.ros.org/dwa_local_planner) csomagot próbáltuk meg használni, azonban ezzel több problémánk is volt. A legnagyobb gond, a szűk helyek miatt adódott. Számos alkalommal előfordult, hogy nem egy optimális íven próbált meg fordulni, illetve olyan is volt, hogy már a kanyar előtt elfordult és nekiment a falnak.   
 b) Ezután a [TEBPlannert](http://wiki.ros.org/teb_local_planner) próbáltuk ki. Ez a csomag jóval több paramétert tartalmaz, így ezek behangolása jóval több időt vett igénybe. Hatalmas előnye, hogy ez a csomag képes szűkebb helyeken is mozogni úgy, hogy igyekszik a megadott távolságat tartani minden akadálytól.
 
-# Lokális útvonaltervezők
+# Navigáció tesztelése
+
+A navigációs launch fájlok futtatásához az alábbi csomagok telepítésére van szükség:
+
+```console
+sudo apt-get install ros-noetic-move-base
+sudo apt install ros-noetic-move-slow-and-clear
+sudo apt install ros-noetic-dwa-local-planner
+sudo apt install ros-noetic-teb-local-planner
+```
+
+Ezt követően a `spawn_robot.launch` fájl futtatásával betölthetjük a robotot és a labirintust, majd a `navigation.launch` fájllal a navigációhoz szükséges csomagokat indíthatjuk el.
+
+```console
+roslaunch bme_ros_micromouse spawn_robot.launch
+roslaunch bme_ros_micromouse navigation.launch
+```
+
+A robot célpontját megadhatjuk RVizben a 2D Nav Goal-lal. A globális útvonaltervező megtervezi az ide vezető legrövidebb utat, majd pedig a lokális tervező felel a a robot környezetében az útvonal megfelelő módosításáért.
+
 
 # Paratméterek módosítása RVizben
 
