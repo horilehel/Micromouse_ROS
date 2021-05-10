@@ -12,9 +12,13 @@
 
 # Micrimouse ROS
 
-# Videó az eredmények bemutatásáról
+# Videók az eredmények bemutatásáról
 
-<a href="https://youtu.be/XveJMrCh9vw"><img height="400" src="./assets/youtube1.png"></a>
+<a href="https://youtu.be/doHhJ7wtTCQ"><img height="400" src="./assets/youtube_1.png"></a>
+
+<a href="https://youtu.be/6O1bzjymoWA"><img height="400" src="./assets/youtube_2.png"></a>
+
+<a href="https://youtu.be/0kCB9RVPd6E"><img height="400" src="./assets/youtube_3.png"></a>
 
 # Tartalomjegyzék
 1. [Projekt bemutása](#Projekt-bemutatása)
@@ -28,7 +32,8 @@
 7. [Lokalizáció](#Lokalizáció)  
 7.1. [AMCL](#AMCL)
 8. [Navigáció](#Navigáció)  
-8.1. [Recovery akciók](#Recovery-akciók)
+8.1. [Lokális útvonaltervezők](#Lokális-útvonaltervezők)  
+8.2. [Paratméterek módosítása RVizben](#Paratméterek-módosítása-RVizben)  
 9. [Összefoglalás](#Összefoglalás)
 
 # Projekt bemutatása
@@ -219,6 +224,15 @@ Az alábbi képeken jól látható, hogy a kezdetben a kiindulási pont körül 
 
 # Navigáció
 
-## Recovery akciók
+A [ROS nyílt forrású navigációs stackje](http://wiki.ros.org/navigation) számos lehetőséget kíván a navigáció megvalósítására. Odometria és szenzor adatok a bemenetei és sebesség utatsítások a kimenetei amiket a mobil robotunknak továbbíthatunk. Nagyrészt az órán használt csomagokat használtuk fel:
+1) Lokalizációra az AMCL-t használtuk a már korábban rögzített térképekkel.
+2) Globlális útvonaltervezésre a [NavfnROS](http://wiki.ros.org/navfn) csomagot használtuk. Ez az útvonaltervező képes volt a legrövidebb útvonal megtalálására a labirintuson belül.
+3) Lokális tervezéshez két csomagot próbáltunk ki:    
+a) Az első a [DWAPlannerROS](http://wiki.ros.org/dwa_local_planner) csomagot próbáltuk meg használni, azonban ezzel több problémánk is volt. A legnagyobb gond, a szűk helyek miatt adódott. Számos alkalommal előfordult, hogy nem egy optimális íven próbált meg fordulni, illetve olyan is volt, hogy már a kanyar előtt elfordult és nekiment a falnak.   
+b) Ezután a [TEBPlannert](http://wiki.ros.org/teb_local_planner) próbáltuk ki. Ez a csomag jóval több paramétert tartalmaz, így ezek behangolása jóval több időt vett igénybe. Hatalmas előnye, hogy ez a csomag képes szűkebb helyeken is mozogni úgy, hogy igyekszik a megadott távolságat tartani minden akadálytól.
+
+# Lokális útvonaltervezők
+
+# Paratméterek módosítása RVizben
 
 # Összefoglalás
