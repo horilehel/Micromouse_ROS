@@ -253,7 +253,8 @@ roslaunch bme_ros_micromouse navigation.launch
 
 A robot célpontját megadhatjuk RVizben a 2D Nav Goal-lal. A globális útvonaltervező megtervezi az ide vezető legrövidebb utat, majd pedig a lokális tervező felel a a robot környezetében az útvonal megfelelő módosításáért.
 
-
 # Paratméterek módosítása RVizben
 
 # Összefoglalás
+
+A projekt megoldása során mélyebben elsajátíthattuk a pálya készítését gazebo-ban, a robot modell készítését, valamint a navigációs stack különböző részeit is jobban megismerhettük. Saját node-unk segítségével a robotunk képes elérni a labirintusan kijelölt cellát, valamint a futás végén a pályáról készített tömböt betöltve képes a legrövidebb úton a kijelölt pontba jutni. Ezen kívül a labirintus bejárása során készített térképen a navigációs stack-et felhasználva optimálisabb útvonalon tud a robotunk haladni, vigyelembe véve a globális és lokális útvonaltervet. Összességében elégedettek vagyunk a projektünkkel, hiszen minden kitűzött célt sikerült megvalósítanunk.
