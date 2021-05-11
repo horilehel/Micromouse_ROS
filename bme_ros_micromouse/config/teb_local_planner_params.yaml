@@ -1,295 +1,121 @@
-!!python/object/new:dynamic_reconfigure.encoding.Config
-dictitems:
+TebLocalPlannerROS:
+
+# Robot Configuration Parameters - Kobuki
+  controller_frequency: 10.0
+
+  max_vel_x: 0.3  # 0.55
+  min_vel_x: 0.0 
+
+  max_vel_y: 0.0  # diff drive robot
+  min_vel_y: 0.0  # diff drive robot
+
+  #max_vel_trans: 0.1 # choose slightly less than the base's capability
+  #min_vel_trans: 0.02  # this is the min trans velocity when there is negligible rotational velocity
+  #trans_stopped_vel: 0.02
+
+  # Warning!
+  #   do not set min_trans_vel to 0.0 otherwise dwa will always think translational velocities
+  #   are non-negligible and small in place rotational velocities will be created.
+
+  max_vel_theta: 0.9  # choose slightly less than the base's capability
+  min_vel_theta: 0.1  # this is the min angular velocity when there is negligible translational velocity
+  #theta_stopped_vel: 0.1
+  
+  acc_lim_x: 0.5 
   acc_lim_theta: 0.9
-  acc_lim_x: 0.5
-  acc_lim_y: 0.5
-  allow_init_with_backwards_motion: false
-  cmd_angle_instead_rotvel: false
-  costmap_obstacles_behind_robot_dist: 1.5
-  dt_hysteresis: 0.1
-  dt_ref: 0.3
-  dynamic_obstacle_inflation_dist: 0.6
-  enable_multithreading: true
-  exact_arc_length: false
-  feasibility_check_no_poses: 5
-  force_reinit_new_goal_angular: 0.78
-  force_reinit_new_goal_dist: 1.0
-  free_goal_vel: false
-  global_plan_overwrite_orientation: true
-  global_plan_viapoint_sep: -0.1
-  groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-    dictitems:
-      groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-        dictitems:
-          GoalTolerance: !!python/object/new:dynamic_reconfigure.encoding.Config
-            dictitems:
-              free_goal_vel: false
-              groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              id: 6
-              name: GoalTolerance
-              parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              parent: 0
-              state: true
-              type: ''
-              xy_goal_tolerance: 0.04
-              yaw_goal_tolerance: 0.1
-            state: []
-          HCPlanning: !!python/object/new:dynamic_reconfigure.encoding.Config
-            dictitems:
-              enable_multithreading: true
-              groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              h_signature_prescaler: 0.5
-              h_signature_threshold: 0.1
-              id: 9
-              max_number_classes: 4
-              name: HCPlanning
-              obstacle_heading_threshold: 0.45
-              parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              parent: 0
-              roadmap_graph_area_length_scale: 1.0
-              roadmap_graph_area_width: 5.0
-              roadmap_graph_no_samples: 15
-              selection_alternative_time_cost: false
-              selection_cost_hysteresis: 1.0
-              selection_obst_cost_scale: 100.0
-              selection_prefer_initial_plan: 0.9
-              selection_viapoint_cost_scale: 1.0
-              state: true
-              switching_blocking_period: 0.0
-              type: ''
-              viapoints_all_candidates: true
-              visualize_hc_graph: false
-            state: []
-          Obstacles: !!python/object/new:dynamic_reconfigure.encoding.Config
-            dictitems:
-              costmap_obstacles_behind_robot_dist: 1.5
-              dynamic_obstacle_inflation_dist: 0.6
-              groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              id: 7
-              include_costmap_obstacles: true
-              include_dynamic_obstacles: false
-              inflation_dist: 0.6
-              legacy_obstacle_association: false
-              min_obstacle_dist: 0.1
-              name: Obstacles
-              obstacle_association_cutoff_factor: 5.0
-              obstacle_association_force_inclusion_factor: 1.5
-              obstacle_poses_affected: 15
-              parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              parent: 0
-              state: true
-              type: ''
-            state: []
-          Optimization: !!python/object/new:dynamic_reconfigure.encoding.Config
-            dictitems:
-              groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              id: 8
-              name: Optimization
-              no_inner_iterations: 5
-              no_outer_iterations: 4
-              obstacle_cost_exponent: 4.0
-              optimization_activate: true
-              optimization_verbose: false
-              parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              parent: 0
-              penalty_epsilon: 0.1
-              state: true
-              type: ''
-              weight_acc_lim_theta: 5.0
-              weight_acc_lim_x: 1.0
-              weight_acc_lim_y: 1.0
-              weight_adapt_factor: 2.0
-              weight_dynamic_obstacle: 50.0
-              weight_dynamic_obstacle_inflation: 0.1
-              weight_inflation: 0.1
-              weight_kinematics_forward_drive: 1.0
-              weight_kinematics_nh: 1000.0
-              weight_kinematics_turning_radius: 1.0
-              weight_max_vel_theta: 5.0
-              weight_max_vel_x: 2.0
-              weight_max_vel_y: 2.0
-              weight_obstacle: 100.0
-              weight_optimaltime: 1.0
-              weight_shortest_path: 3.0
-              weight_viapoint: 1.0
-            state: []
-          Recovery: !!python/object/new:dynamic_reconfigure.encoding.Config
-            dictitems:
-              groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              id: 10
-              name: Recovery
-              oscillation_recovery: true
-              parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              parent: 0
-              shrink_horizon_backup: true
-              state: true
-              type: ''
-            state: []
-          Robot: !!python/object/new:dynamic_reconfigure.encoding.Config
-            dictitems:
-              acc_lim_theta: 0.9
-              acc_lim_x: 0.5
-              groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-                dictitems:
-                  Carlike: !!python/object/new:dynamic_reconfigure.encoding.Config
-                    dictitems:
-                      cmd_angle_instead_rotvel: false
-                      groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-                        state: []
-                      id: 4
-                      min_turning_radius: 0.0
-                      name: Carlike
-                      parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
-                        state: []
-                      parent: 3
-                      state: true
-                      type: ''
-                      wheelbase: 1.0
-                    state: []
-                  Omnidirectional: !!python/object/new:dynamic_reconfigure.encoding.Config
-                    dictitems:
-                      acc_lim_y: 0.5
-                      groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-                        state: []
-                      id: 5
-                      max_vel_y: 0.0
-                      name: Omnidirectional
-                      parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
-                        state: []
-                      parent: 3
-                      state: true
-                      type: ''
-                    state: []
-                state: []
-              id: 3
-              is_footprint_dynamic: false
-              max_vel_theta: 0.9
-              max_vel_x: 0.2
-              max_vel_x_backwards: 0.2
-              name: Robot
-              parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              parent: 0
-              state: true
-              type: ''
-            state: []
-          Trajectory: !!python/object/new:dynamic_reconfigure.encoding.Config
-            dictitems:
-              allow_init_with_backwards_motion: false
-              dt_hysteresis: 0.1
-              dt_ref: 0.3
-              exact_arc_length: false
-              feasibility_check_no_poses: 5
-              force_reinit_new_goal_angular: 0.78
-              force_reinit_new_goal_dist: 1.0
-              global_plan_overwrite_orientation: true
-              groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              id: 1
-              max_global_plan_lookahead_dist: 3.0
-              name: Trajectory
-              parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              parent: 0
-              publish_feedback: false
-              state: true
-              teb_autosize: true
-              type: ''
-              visualize_with_time_as_z_axis_scale: 0.0
-            state: []
-          ViaPoints: !!python/object/new:dynamic_reconfigure.encoding.Config
-            dictitems:
-              global_plan_viapoint_sep: -0.1
-              groups: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              id: 2
-              name: ViaPoints
-              parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
-                state: []
-              parent: 0
-              state: true
-              type: ''
-              via_points_ordered: false
-            state: []
-        state: []
-      id: 0
-      name: Default
-      parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
-        state: []
-      parent: 0
-      state: true
-      type: ''
-    state: []
-  h_signature_prescaler: 0.5
-  h_signature_threshold: 0.1
-  include_costmap_obstacles: true
-  include_dynamic_obstacles: false
-  inflation_dist: 0.6
-  is_footprint_dynamic: false
-  legacy_obstacle_association: false
-  max_global_plan_lookahead_dist: 3.0
-  max_number_classes: 4
-  max_vel_theta: 0.9
-  max_vel_x: 0.2
-  max_vel_x_backwards: 0.2
-  max_vel_y: 0.0
-  min_obstacle_dist: 0.1
+  acc_lim_y: 0.5      # diff drive robot
+
   min_turning_radius: 0.0
+  
+  # Footprint parameters
+  footprint_model: # types: "point", "circular", "line", "two_circles", "polygon"
+    type: "point"
+    # these are not relevant parameters
+    # radius: 0.2 # for type "circular"
+    # line_start: [-0.3, 0.0] # for type "line"
+    # line_end: [0.3, 0.0] # for type "line"
+    # front_offset: 0.2 # for type "two_circles"
+    # front_radius: 0.2 # for type "two_circles"
+    # rear_offset: 0.2 # for type "two_circles"
+    # rear_radius: 0.2 # for type "two_circles"
+    # vertices: [ [0.25, -0.05], [0.18, -0.05], [0.18, -0.18], [-0.19, -0.18], [-0.25, 0], [-0.19, 0.18], [0.18, 0.18], [0.18, 0.05], [0.25, 0.05] ] # for type "polygon"
+
+# Goal Tolerance Parameters
+  yaw_goal_tolerance: 0.1  # 0.05
+  xy_goal_tolerance: 0.04  # 0.10
+  free_goal_vel: False
+  complete_global_plan: True
+
+# Trajectory Configuration Parameters
+  dt_ref: 0.3
+  dt_hysteresis : 0.1
+  min_samples: 3
+  global_plan_overwrite_orientation : true
+  global_plan_viapoint_sep : -0.1
+  max_global_plan_lookahead_dist: 1.0
+  force_reinit_new_goal_dist: 1.0
+  force_reinit_new_goal_angular: 0.78
+  feasibility_check_no_poses : 4
+  publish_feedback : false
+  shrink_horizon_backup: true
+  allow_init_with_backwards_motion: false
+  exact_arc_length: false
+  shrink_horizon_min_duration: 10.0
+
+# Obstacle Parameters
+  min_obstacle_dist: 0.06
+  include_costmap_obstacles: true
+  costmap_obstacles_behind_robot_dist: 1.5
+  obstacle_poses_affected: 10
+  inflation_dist: 0.6
+  include_dynamic_obstacles: false
+  legacy_obstacle_association: false
+  obstacle_association_force_inclusion_factor: 1.5
+  obstacle_association_cutoff_factor: 5
+  costmap_converter_plugin: ""
+  costmap_converter_spin_thread: true
+  costmap_converter_rate: 5.0
+
+# Optimization Parameters
   no_inner_iterations: 5
   no_outer_iterations: 4
-  obstacle_association_cutoff_factor: 5.0
-  obstacle_association_force_inclusion_factor: 1.5
-  obstacle_cost_exponent: 4.0
-  obstacle_heading_threshold: 0.45
-  obstacle_poses_affected: 15
-  optimization_activate: true
-  optimization_verbose: false
-  oscillation_recovery: true
-  penalty_epsilon: 0.1
-  publish_feedback: false
-  roadmap_graph_area_length_scale: 1.0
-  roadmap_graph_area_width: 5.0
-  roadmap_graph_no_samples: 15
-  selection_alternative_time_cost: false
+  penalty_epsilon: 0.05
+  weight_max_vel_x: 2.0
+  weight_max_vel_theta: 1.0
+  weight_acc_lim_x: 1.0
+  weight_acc_lim_theta: 5.0
+  weight_kinematics_nh: 1000.0
+  weight_kinematics_forward_drive: 1.0
+  weight_kinematics_turning_radius: 1.0
+  weight_optimaltime: 1.0
+  weight_obstacle: 100.0
+  weight_viapoint: 1.0
+  weight_inflation: 0.1
+  weight_adapt_factor: 2.0
+  weight_shortest_path: 3.0
+
+# Parallel Planning in distinctive Topologies
+  enable_homotopy_class_planning : true
+  enable_multithreading: true
+  max_number_classes: 4
   selection_cost_hysteresis: 1.0
   selection_obst_cost_scale: 100.0
-  selection_prefer_initial_plan: 0.9
   selection_viapoint_cost_scale: 1.0
-  shrink_horizon_backup: true
-  switching_blocking_period: 0.0
-  teb_autosize: true
-  via_points_ordered: false
-  viapoints_all_candidates: true
+  roadmap_graph_no_samples: 15
+  roadmap_graph_area_width: 5
+  h_signature_prescaler: 1.0
+  h_signature_threshold: 0.1
+  obstacle_heading_threshold: 0.45
   visualize_hc_graph: false
-  visualize_with_time_as_z_axis_scale: 0.0
-  weight_acc_lim_theta: 5.0
-  weight_acc_lim_x: 1.0
-  weight_acc_lim_y: 1.0
-  weight_adapt_factor: 2.0
-  weight_dynamic_obstacle: 50.0
-  weight_dynamic_obstacle_inflation: 0.1
-  weight_inflation: 0.1
-  weight_kinematics_forward_drive: 1.0
-  weight_kinematics_nh: 1000.0
-  weight_kinematics_turning_radius: 1.0
-  weight_max_vel_theta: 5.0
-  weight_max_vel_x: 2.0
-  weight_max_vel_y: 2.0
-  weight_obstacle: 100.0
-  weight_optimaltime: 1.0
-  weight_shortest_path: 3.0
-  weight_viapoint: 1.0
-  wheelbase: 1.0
-  xy_goal_tolerance: 0.04
-  yaw_goal_tolerance: 0.1
-state: []
+  viapoints_all_candidates: true
+  switching_blocking_period: 0.0
+
+# Miscellaneous Parameters
+  odom_topic: "odom"
+  map_frame: "map"
+
+# ez lehet nem kell bele
+# Debugging
+  publish_traj_pc : true
+  publish_cost_grid_pc: true
+  global_frame_id: odom
