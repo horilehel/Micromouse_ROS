@@ -1,14 +1,17 @@
 [//]: # (Image References)
 
-[image1]: ./assets/robot_body.png "Robot modell"
-[image2]: ./assets/robot_wheel.png "Robot modell"
-[image3]: ./assets/lidar.png "Robot modell"
-[image4]: ./assets/robot_rviz.png "Robot modell"
-[image5]: ./assets/robot_gazebo.png "Robot modell"
-[image6]: ./assets/gmapping_in_progress.png "GMapping"
-[image7]: ./assets/gmapping_finished.png "GMapping"
-[image8]: ./assets/amcl_0.png "AMCL"
-[image9]: ./assets/amcl_1.png "AMCL"
+[image1]: ./assets/micromouse_labyrinth.JPG "Labirintus"
+[image2]: ./assets/labyrinth_base.png "Labirintus"
+[image3]: ./assets/labyrinth_60cm.png "Labirintus"
+[image4]: ./assets/robot_body.png "Robot modell"
+[image5]: ./assets/robot_wheel.png "Robot modell"
+[image6]: ./assets/lidar.png "Robot modell"
+[image7]: ./assets/robot_rviz.png "Robot modell"
+[image8]: ./assets/robot_gazebo.png "Robot modell"
+[image9]: ./assets/gmapping_in_progress.png "GMapping"
+[image10]: ./assets/gmapping_finished.png "GMapping"
+[image11]: ./assets/amcl_0.png "AMCL"
+[image12]: ./assets/amcl_1.png "AMCL"
 
 # Micrimouse ROS
 
@@ -125,6 +128,19 @@ catkin_make
 A `.bashrc` fájlt ismét kiegészíthetjük, most a `source ~/catkin_ws/devel/setup.bash` paranncsal. Ezt akkor érdemes megtenni, ha nem akarjuk minden új terminálban manuálisan lefuttatni a kódót.
 
 # Labirintus
+A labirintus elkészítése során szerettünk volna minél inkább a micromouse versenyekhez hasonlító pályát készíteni, így egy korábbi évekből származó próbapályát hoztunk át a virtuális világba.
+
+![alt text][image1]
+
+A labirintust a Gazebo Building Editor funkciójának segítségével készítettük. Ehhez először egy alaprajzot kellett elkészíteni.
+
+![alt text][image2]
+
+Miután elkészült az alaprajz, beimportálva azt a model editorba, meg kell adnunk az alap méreteket. Ez előnyös abból a szempontból, hogy így 1 alaprajz elegendő különböző mértű változatok kreálásához. Miután megadtuk a meghatározó méretet, elkezdhettük pozícionálni az alaprajz alapján a falakat. Nehézség, hogy minden egyes falrészt egyesével kell átméretezni a számunkra megfelelő magasságúra és szélességűre és hosszúságúra. Jelen esetben rendkívül hasznos lett volna, ha a falaknak adhattunk volna meg egy alap magasságot és szélességet, hisz az nem változott. Az alaprajz segítségével 2 labirintust generáltunk: egy 60 cm széles és egy 30 cm széles folyosókkal rendelkező labirintust.
+
+![alt text][image3]
+
+A modellek elkészítése után csak el kell helyezni őket a szimulációban, majd elmenteni a világot, ezzel generálva a számunkra megfelelő .world fájlt.
 
 # Robot felépítése
 A robot tervezése során szempont volt, hogy hasonlítson a Micromouse során használt robotokhoz. Egy testből, a hozzá középen csatalkoztatott két kerékből, valamint a tetején elhejezkedő lidar szenzorból épül fel. Mozgatásához differenciál hajtást használtunk. Ezen kívül hozzáadtunk egy laser filtert, hogy a navigáció során kiszűrhessük a túlságosan kis távlságra lévő jeleket, amik jellemzően a gyorsítás és fékezés során a robot dőléséből adódtak.
@@ -132,17 +148,17 @@ A robot tervezése során szempont volt, hogy hasonlítson a Micromouse során h
 # Robot modell
 A 3D modelleket Blenderben készítettük el (kivéve a lidart, aminek a modelljét a Week-3-4-Gazebo-basics csomagból kölcsönöztük).
 
-![alt text][image1]
-
-![alt text][image2]
-
-![alt text][image3]
-
-A robot alvázát, kerekeit, a szenzorokat és ezeknek a megjelenítését és tuladjonságait a `umouse_robot.xacro` fájlban tudjuk megadni. Itt tudjuk azt is beállítani, hogy a testek megjelenítésekor a Blenderben készült modelleket láthassuk.
-
 ![alt text][image4]
 
 ![alt text][image5]
+
+![alt text][image6]
+
+A robot alvázát, kerekeit, a szenzorokat és ezeknek a megjelenítését és tuladjonságait a `umouse_robot.xacro` fájlban tudjuk megadni. Itt tudjuk azt is beállítani, hogy a testek megjelenítésekor a Blenderben készült modelleket láthassuk.
+
+![alt text][image7]
+
+![alt text][image8]
 
 Ahhoz, hogy használhassuk a modellünket a szimulációs környezetben, be kell még kötni a gazeboba a differenciálhajtáshoz és a lidarhoz szükséges pluginokat a `umouse_robot.gazebo`.
 
@@ -186,9 +202,9 @@ rosrun bme_ros_micromouse map_labyrinth.py
 
 Az alábbi képen a labirintus bejárása látható. A piros vonalak a lidar által látott falak, a szürke terület pedig a GMapping által már feltérképezett területet jelöli.
 
-![alt text][image6]
+![alt text][image9]
 
-![alt text][image7]
+![alt text][image10]
 
 Miután a robot elérte a kijelölt pontokat és kész a térkép, a `map_server` csomag `map_saver` node-jával elmenthetjük. A `map_saver` node oda menti a térképet, amelyik mappából indítjuk. Esetünkben az alábbi kód használható:
 
@@ -220,9 +236,9 @@ Ahhoz, hogy az AMCL a megfelelő helyre konvergáljon megadtuk, hogy nagyjából
 
 Az alábbi képeken jól látható, hogy a kezdetben a kiindulási pont körül szétszórt particle-ök a haladás során a megfelelő pontba konvergálnak.
 
-![alt text][image8]
+![alt text][image11]
 
-![alt text][image9]
+![alt text][image12]
 
 # Navigáció
 
