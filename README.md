@@ -12,7 +12,8 @@
 [image10]: ./assets/gmapping_finished.png "GMapping"
 [image11]: ./assets/amcl_0.png "AMCL"
 [image12]: ./assets/amcl_1.png "AMCL"
-[image13]: ./assets/rqt_reconfigure.png "RQT"
+[image13]: ./assets/navigation.png "navigation"
+[image14]: ./assets/rqt_reconfigure.png "RQT"
 
 
 # Micrimouse ROS
@@ -271,6 +272,8 @@ roslaunch bme_ros_micromouse navigation.launch
 
 A robot célpontját megadhatjuk RVizben a 2D Nav Goal-lal. A globális útvonaltervező megtervezi az ide vezető legrövidebb utat, majd pedig a lokális tervező felel a a robot környezetében az útvonal megfelelő módosításáért.
 
+![alt text][image13]
+
 # Paratméterek módosítása RVizben
 
 A paraméterek hangolása egyrendkívül komplex és nehéz feladat, mely rengeteg időt venne el offline, hisz ilyenkor minden egyes parameter set esetén újra kell futtatni a szimulációt. Ennek kiküszöbölésére használható az rqt reconfigure parancs, mely segítségével online, futás közben állíthatjuk a paramétereket, így pedig lerövidítve a hangoláshoz szükséges nagy mennyiségű időt. Az alább látható parancsot a szimuláció elindítás után kell futtatni.
@@ -279,7 +282,7 @@ A paraméterek hangolása egyrendkívül komplex és nehéz feladat, mely renget
 rosrun rqt_reconfigure rqt_reconfigure
 ```
 
-![alt text][image13]
+![alt text][image14]
 
 Itt az összes konfigurációs fájlhoz hozzáférünk és így befolyásolhatjuk a paramétereket.
 

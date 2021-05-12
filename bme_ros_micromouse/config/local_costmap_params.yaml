@@ -7,7 +7,7 @@ local_costmap:
    robot_radius: 0.05
    width: 1
    height: 1
-   resolution: 0.06
+   resolution: 0.02
    transform_tolerance: 0.5
    rolling_window: true
 
