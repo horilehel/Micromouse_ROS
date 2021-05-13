@@ -16,7 +16,7 @@
 [image14]: ./assets/rqt_reconfigure.png "RQT"
 
 
-# Micrimouse ROS
+# Micromouse ROS
 
 # Videók az eredmények bemutatásáról
 
