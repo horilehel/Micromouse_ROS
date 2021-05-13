@@ -83,10 +83,12 @@ beni9708@DESKTOP-GSPKIBL:~/catkin_ws/src/Micromouse_ROS/bme_ros_micromouse$ tree
 │   └── world.launch
 ├── maps
 │   └── saved_maps
-│       ├── map.pgm
-│       ├── map.yaml
-│       ├── map_old.pgm
-│       └── map_old.yaml
+│       ├── 30cm
+│       │   ├── map.pgm
+│       │   └── map.yaml
+│       └── 60cm
+│           ├── map.pgm
+│           └── map.yaml
 ├── meshes
 │   ├── body.dae
 │   ├── lidar.dae
@@ -98,8 +100,7 @@ beni9708@DESKTOP-GSPKIBL:~/catkin_ws/src/Micromouse_ROS/bme_ros_micromouse$ tree
 │   └── world.rviz
 ├── scripts
 │   ├── map_labyrinth.py
-│   ├── map_labyrinth60.py
-│   └── nav_goals.py
+│   └── map_labyrinth60.py
 ├── urdf
 │   ├── materials.xacro
 │   ├── umouse_robot.gazebo
@@ -108,6 +109,7 @@ beni9708@DESKTOP-GSPKIBL:~/catkin_ws/src/Micromouse_ROS/bme_ros_micromouse$ tree
     ├── labyrinth_30cm.world
     ├── labyrinth_3m.world
     └── labyrinth_60cm.world
+
 ```
 
 # ROS Noetic telepítése
@@ -276,7 +278,7 @@ A robot célpontját megadhatjuk RVizben a 2D Nav Goal-lal. A globális útvonal
 
 # Paratméterek módosítása RVizben
 
-A paraméterek hangolása egyrendkívül komplex és nehéz feladat, mely rengeteg időt venne el offline, hisz ilyenkor minden egyes parameter set esetén újra kell futtatni a szimulációt. Ennek kiküszöbölésére használható az rqt reconfigure parancs, mely segítségével online, futás közben állíthatjuk a paramétereket, így pedig lerövidítve a hangoláshoz szükséges nagy mennyiségű időt. Az alább látható parancsot a szimuláció elindítás után kell futtatni.
+A paraméterek hangolása egy rendkívül komplex és nehéz feladat, mely rengeteg időt venne el offline, hisz ilyenkor minden egyes parameter set esetén újra kell futtatni a szimulációt. Ennek kiküszöbölésére használható az rqt reconfigure parancs, mely segítségével online, futás közben állíthatjuk a paramétereket, így pedig lerövidítve a hangoláshoz szükséges nagy mennyiségű időt. Az alább látható parancsot a szimuláció elindítás után kell futtatni.
 
 ```console
 rosrun rqt_reconfigure rqt_reconfigure
